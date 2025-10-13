@@ -1,3 +1,4 @@
+// src/pages/Settings.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Moon,
@@ -42,7 +43,6 @@ function save(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 function bytesForString(str) {
-  // rough UTF-16 estimate
   return str ? str.length * 2 : 0;
 }
 function formatBytes(bytes) {
@@ -86,7 +86,7 @@ const DEFAULT_SETTINGS = {
     confirmSettlement: true,
     autoRecordAfterPay: true,
     roundingMode: "bankers", // bankers | up | down
-    minDebtThreshold: 1, // ignore small debts under this amount
+    minDebtThreshold: 1,
     defaultUPI: "",
   },
   reminders: {
@@ -99,7 +99,7 @@ const DEFAULT_SETTINGS = {
     memeReminders: true,
   },
   expenses: {
-    defaultSplitType: "equal", // equal | percentage | shares | custom
+    defaultSplitType: "equal",
     categories: [
       { name: "Food", color: "#f87171", budget: 0 },
       { name: "Shopping", color: "#fb923c", budget: 0 },
@@ -128,7 +128,7 @@ const DEFAULT_SETTINGS = {
     hideBalances: false,
     blurOnSwitch: false,
     autoLockMinutes: 0,
-    localEncryption: false, // demo toggle only
+    localEncryption: false,
   },
   integrations: {
     commandPalette: true,
@@ -145,7 +145,6 @@ export default function Settings() {
   const [settings, setSettings] = useState(() => {
     const stored = load(SETTINGS_KEY, null);
     if (!stored) return DEFAULT_SETTINGS;
-    // shallow merge defaults to allow forward-compat
     return deepMerge(DEFAULT_SETTINGS, stored);
   });
 
@@ -155,7 +154,7 @@ export default function Settings() {
     save(SETTINGS_KEY, settings);
   }, [settings]);
 
-  // Apply appearance settings to document
+  // Apply appearance settings to document (theme + other)
   useEffect(() => {
     applyTheme(settings.appearance.theme);
   }, [settings.appearance.theme]);
@@ -287,13 +286,13 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-800 text-white">
+    <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 bg-gradient-to-b from-gray-50 via-white to-gray-100 text-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-white transition-colors">
       <div className="max-w-5xl mx-auto space-y-8">
         <header className="flex items-center justify-between">
           <h1 className="text-2xl sm:text-3xl font-extrabold">Settings</h1>
           <button
             onClick={() => setSettings(DEFAULT_SETTINGS)}
-            className="px-3 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 flex items-center gap-2 text-sm"
+            className="px-3 py-1.5 rounded-md ring-1 ring-black/10 bg-white hover:bg-gray-50 text-gray-900 flex items-center gap-2 text-sm dark:bg-gray-800 dark:ring-white/10 dark:text-white dark:hover:bg-gray-700"
             title="Reset to defaults"
           >
             <RefreshCw size={16} /> Reset
@@ -301,39 +300,17 @@ export default function Settings() {
         </header>
 
         {/* Profile */}
-        <Section title="Profile" icon={<User className="text-cyan-300" />}>
+        <Section title="Profile" icon={<User className="text-cyan-500 dark:text-cyan-300" />}>
           <div className="grid sm:grid-cols-2 gap-4">
-            <Input
-              label="Name"
-              value={settings.profile.name}
-              onChange={(v) => onChange("profile.name", v)}
-              placeholder="Your name"
-            />
-            <Input
-              label="Email"
-              value={settings.profile.email}
-              onChange={(v) => onChange("profile.email", v)}
-              placeholder="you@example.com"
-            />
-            <Input
-              label="Phone"
-              value={settings.profile.phone}
-              onChange={(v) => onChange("profile.phone", v)}
-              placeholder="+91…"
-            />
-            <Input
-              label="Default UPI ID"
-              value={settings.profile.upiId}
-              onChange={(v) => onChange("profile.upiId", v)}
-              placeholder="example@upi"
-            />
+            <Input label="Name" value={settings.profile.name} onChange={(v) => onChange("profile.name", v)} placeholder="Your name" />
+            <Input label="Email" value={settings.profile.email} onChange={(v) => onChange("profile.email", v)} placeholder="you@example.com" />
+            <Input label="Phone" value={settings.profile.phone} onChange={(v) => onChange("profile.phone", v)} placeholder="+91…" />
+            <Input label="Default UPI ID" value={settings.profile.upiId} onChange={(v) => onChange("profile.upiId", v)} placeholder="example@upi" />
             <Select
               label="Timezone"
               value={settings.profile.timezone}
               onChange={(v) => onChange("profile.timezone", v)}
-              options={[settings.profile.timezone, "UTC", "Asia/Kolkata", "America/New_York", "Europe/Berlin"].map(
-                (z) => ({ label: z, value: z })
-              )}
+              options={[settings.profile.timezone, "UTC", "Asia/Kolkata", "America/New_York", "Europe/Berlin"].map((z) => ({ label: z, value: z }))}
             />
             <Select
               label="Language"
@@ -344,49 +321,29 @@ export default function Settings() {
                 { label: "English (US)", value: "en-US" },
               ]}
             />
-            <Input
-              label="Leaderboard Alias"
-              value={settings.profile.leaderboardAlias}
-              onChange={(v) => onChange("profile.leaderboardAlias", v)}
-              placeholder="Alias for leaderboard"
-            />
+            <Input label="Leaderboard Alias" value={settings.profile.leaderboardAlias} onChange={(v) => onChange("profile.leaderboardAlias", v)} placeholder="Alias for leaderboard" />
           </div>
         </Section>
 
         {/* Appearance */}
-        <Section title="Appearance" icon={<Palette className="text-purple-300" />}>
+        <Section title="Appearance" icon={<Palette className="text-purple-500 dark:text-purple-300" />}>
           <div className="grid sm:grid-cols-3 gap-4">
             <div>
-              <div className="text-sm text-slate-300 mb-2">Theme</div>
+              <div className="text-sm text-slate-700 dark:text-slate-300 mb-2">Theme</div>
               <div className="flex items-center gap-2">
-                <ThemeButton
-                  active={settings.appearance.theme === "system"}
-                  onClick={() => onChange("appearance.theme", "system")}
-                  icon={<Laptop size={16} />}
-                  label="System"
-                />
-                <ThemeButton
-                  active={settings.appearance.theme === "light"}
-                  onClick={() => onChange("appearance.theme", "light")}
-                  icon={<Sun size={16} />}
-                  label="Light"
-                />
-                <ThemeButton
-                  active={settings.appearance.theme === "dark"}
-                  onClick={() => onChange("appearance.theme", "dark")}
-                  icon={<Moon size={16} />}
-                  label="Dark"
-                />
+                <ThemeButton active={settings.appearance.theme === "system"} onClick={() => onChange("appearance.theme", "system")} icon={<Laptop size={16} />} label="System" />
+                <ThemeButton active={settings.appearance.theme === "light"} onClick={() => onChange("appearance.theme", "light")} icon={<Sun size={16} />} label="Light" />
+                <ThemeButton active={settings.appearance.theme === "dark"} onClick={() => onChange("appearance.theme", "dark")} icon={<Moon size={16} />} label="Dark" />
               </div>
             </div>
 
             <div>
-              <div className="text-sm text-slate-300 mb-2">Accent</div>
+              <div className="text-sm text-slate-700 dark:text-slate-300 mb-2">Accent</div>
               <input
                 type="color"
                 value={settings.appearance.accent}
                 onChange={(e) => onChange("appearance.accent", e.target.value)}
-                className="w-12 h-10 rounded-md border border-gray-700 bg-gray-800"
+                className="w-12 h-10 rounded-md border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700"
                 aria-label="accent color"
               />
             </div>
@@ -403,18 +360,10 @@ export default function Settings() {
           </div>
 
           <div className="mt-4 grid sm:grid-cols-3 gap-4">
-            <Toggle
-              label="Reduced motion"
-              checked={settings.appearance.reducedMotion}
-              onChange={(v) => onChange("appearance.reducedMotion", v)}
-            />
-            <Toggle
-              label="High contrast"
-              checked={settings.appearance.highContrast}
-              onChange={(v) => onChange("appearance.highContrast", v)}
-            />
+            <Toggle label="Reduced motion" checked={settings.appearance.reducedMotion} onChange={(v) => onChange("appearance.reducedMotion", v)} />
+            <Toggle label="High contrast" checked={settings.appearance.highContrast} onChange={(v) => onChange("appearance.highContrast", v)} />
             <div>
-              <div className="text-sm text-slate-300 mb-1">Font size</div>
+              <div className="text-sm text-slate-700 dark:text-slate-300 mb-1">Font size</div>
               <input
                 type="range"
                 min={90}
@@ -424,54 +373,22 @@ export default function Settings() {
                 onChange={(e) => onChange("appearance.fontScale", Number(e.target.value))}
                 className="w-full"
               />
-              <div className="text-xs text-slate-400">{settings.appearance.fontScale}%</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">{settings.appearance.fontScale}%</div>
             </div>
           </div>
         </Section>
 
         {/* Notifications & Reminders */}
-        <Section title="Notifications & Reminders" icon={<Bell className="text-blue-300" />}>
+        <Section title="Notifications & Reminders" icon={<Bell className="text-blue-500 dark:text-blue-300" />}>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Toggle
-              label="Enable notifications"
-              checked={settings.reminders.enableNotifications}
-              onChange={(v) => onChange("reminders.enableNotifications", v)}
-            />
-            <Toggle
-              label="Daily summary"
-              checked={settings.reminders.dailySummary}
-              onChange={(v) => onChange("reminders.dailySummary", v)}
-            />
-            <Toggle
-              label="Meme reminders"
-              checked={settings.reminders.memeReminders}
-              onChange={(v) => onChange("reminders.memeReminders", v)}
-            />
-            <Input
-              label="Default lead time (mins)"
-              type="number"
-              value={String(settings.reminders.defaultLeadMinutes)}
-              onChange={(v) => onChange("reminders.defaultLeadMinutes", Number(v || 0))}
-            />
-            <Input
-              label="Frequency cap per day"
-              type="number"
-              value={String(settings.reminders.frequencyCapPerDay)}
-              onChange={(v) => onChange("reminders.frequencyCapPerDay", Number(v || 0))}
-            />
+            <Toggle label="Enable notifications" checked={settings.reminders.enableNotifications} onChange={(v) => onChange("reminders.enableNotifications", v)} />
+            <Toggle label="Daily summary" checked={settings.reminders.dailySummary} onChange={(v) => onChange("reminders.dailySummary", v)} />
+            <Toggle label="Meme reminders" checked={settings.reminders.memeReminders} onChange={(v) => onChange("reminders.memeReminders", v)} />
+            <Input label="Default lead time (mins)" type="number" value={String(settings.reminders.defaultLeadMinutes)} onChange={(v) => onChange("reminders.defaultLeadMinutes", Number(v || 0))} />
+            <Input label="Frequency cap per day" type="number" value={String(settings.reminders.frequencyCapPerDay)} onChange={(v) => onChange("reminders.frequencyCapPerDay", Number(v || 0))} />
             <div className="grid grid-cols-2 gap-3">
-              <Input
-                label="Quiet hours from"
-                type="time"
-                value={settings.reminders.quietFrom}
-                onChange={(v) => onChange("reminders.quietFrom", v)}
-              />
-              <Input
-                label="Quiet hours to"
-                type="time"
-                value={settings.reminders.quietTo}
-                onChange={(v) => onChange("reminders.quietTo", v)}
-              />
+              <Input label="Quiet hours from" type="time" value={settings.reminders.quietFrom} onChange={(v) => onChange("reminders.quietFrom", v)} />
+              <Input label="Quiet hours to" type="time" value={settings.reminders.quietTo} onChange={(v) => onChange("reminders.quietTo", v)} />
             </div>
           </div>
           <div className="mt-3 flex flex-wrap gap-3">
@@ -485,18 +402,10 @@ export default function Settings() {
         </Section>
 
         {/* Payments & Settlements */}
-        <Section title="Payments & Settlements" icon={<SlidersHorizontal className="text-emerald-300" />}>
+        <Section title="Payments & Settlements" icon={<SlidersHorizontal className="text-emerald-500 dark:text-emerald-300" />}>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Toggle
-              label="Confirm before recording settlement"
-              checked={settings.payments.confirmSettlement}
-              onChange={(v) => onChange("payments.confirmSettlement", v)}
-            />
-            <Toggle
-              label="Auto-record after Pay Now"
-              checked={settings.payments.autoRecordAfterPay}
-              onChange={(v) => onChange("payments.autoRecordAfterPay", v)}
-            />
+            <Toggle label="Confirm before recording settlement" checked={settings.payments.confirmSettlement} onChange={(v) => onChange("payments.confirmSettlement", v)} />
+            <Toggle label="Auto-record after Pay Now" checked={settings.payments.autoRecordAfterPay} onChange={(v) => onChange("payments.autoRecordAfterPay", v)} />
             <Select
               label="Rounding mode"
               value={settings.payments.roundingMode}
@@ -507,23 +416,13 @@ export default function Settings() {
                 { label: "Round down", value: "down" },
               ]}
             />
-            <Input
-              label="Ignore debts under (₹)"
-              type="number"
-              value={String(settings.payments.minDebtThreshold)}
-              onChange={(v) => onChange("payments.minDebtThreshold", Number(v || 0))}
-            />
-            <Input
-              label="Default UPI ID"
-              value={settings.payments.defaultUPI}
-              onChange={(v) => onChange("payments.defaultUPI", v)}
-              placeholder="example@upi"
-            />
+            <Input label="Ignore debts under (₹)" type="number" value={String(settings.payments.minDebtThreshold)} onChange={(v) => onChange("payments.minDebtThreshold", Number(v || 0))} />
+            <Input label="Default UPI ID" value={settings.payments.defaultUPI} onChange={(v) => onChange("payments.defaultUPI", v)} placeholder="example@upi" />
           </div>
         </Section>
 
         {/* Expenses & Categories */}
-        <Section title="Expenses & Categories" icon={<Sparkles className="text-fuchsia-300" />}>
+        <Section title="Expenses & Categories" icon={<Sparkles className="text-fuchsia-500 dark:text-fuchsia-300" />}>
           <div className="grid sm:grid-cols-3 gap-4">
             <Select
               label="Default split type"
@@ -539,10 +438,10 @@ export default function Settings() {
           </div>
 
           <div className="mt-3">
-            <div className="text-sm text-slate-300 mb-2">Categories</div>
+            <div className="text-sm text-slate-700 dark:text-slate-300 mb-2">Categories</div>
             <div className="grid sm:grid-cols-2 gap-3">
               {settings.expenses.categories.map((c, i) => (
-                <div key={i} className="rounded-lg border border-gray-800 bg-gray-900/60 p-3 flex items-center gap-3">
+                <div key={i} className="rounded-lg ring-1 ring-black/10 bg-white p-3 flex items-center gap-3 dark:ring-white/10 dark:bg-gray-900/60">
                   <input
                     type="color"
                     value={c.color}
@@ -551,7 +450,7 @@ export default function Settings() {
                       next[i] = { ...c, color: e.target.value };
                       onChange("expenses.categories", next);
                     }}
-                    className="w-10 h-10 rounded-md border border-gray-700"
+                    className="w-10 h-10 rounded-md border border-gray-300 dark:border-gray-700"
                   />
                   <div className="flex-1 grid grid-cols-2 gap-2">
                     <Input
@@ -574,42 +473,24 @@ export default function Settings() {
                       }}
                     />
                   </div>
-                  <button
-                    onClick={() => removeCategory(i)}
-                    className="p-2 rounded-md hover:bg-gray-800"
-                    title="Remove"
-                  >
+                  <button onClick={() => removeCategory(i)} className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" title="Remove">
                     <Trash2 size={16} />
                   </button>
                 </div>
               ))}
             </div>
-            <button onClick={addCategory} className="btn mt-3">
-              + Add Category
-            </button>
+            <button onClick={addCategory} className="btn mt-3">+ Add Category</button>
           </div>
         </Section>
 
         {/* AI & Voice */}
-        <Section title="AI & Voice" icon={<Mic className="text-cyan-300" />}>
+        <Section title="AI & Voice" icon={<Mic className="text-cyan-500 dark:text-cyan-300" />}>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Toggle
-              label="AI categorization"
-              checked={settings.ai.aiCategorizationEnabled}
-              onChange={(v) => onChange("ai.aiCategorizationEnabled", v)}
-            />
-            <Toggle
-              label="Ask before applying AI category"
-              checked={settings.ai.aiAskBeforeApply}
-              onChange={(v) => onChange("ai.aiAskBeforeApply", v)}
-            />
-            <Toggle
-              label="Learn from corrections"
-              checked={settings.ai.aiLearnFromCorrections}
-              onChange={(v) => onChange("ai.aiLearnFromCorrections", v)}
-            />
+            <Toggle label="AI categorization" checked={settings.ai.aiCategorizationEnabled} onChange={(v) => onChange("ai.aiCategorizationEnabled", v)} />
+            <Toggle label="Ask before applying AI category" checked={settings.ai.aiAskBeforeApply} onChange={(v) => onChange("ai.aiAskBeforeApply", v)} />
+            <Toggle label="Learn from corrections" checked={settings.ai.aiLearnFromCorrections} onChange={(v) => onChange("ai.aiLearnFromCorrections", v)} />
             <div>
-              <div className="text-sm text-slate-300 mb-1">AI confidence threshold</div>
+              <div className="text-sm text-slate-700 dark:text-slate-300 mb-1">AI confidence threshold</div>
               <input
                 type="range"
                 min={0}
@@ -619,21 +500,13 @@ export default function Settings() {
                 onChange={(e) => onChange("ai.aiConfidenceThreshold", Number(e.target.value))}
                 className="w-full"
               />
-              <div className="text-xs text-slate-400">
+              <div className="text-xs text-slate-600 dark:text-slate-400">
                 {Math.round(settings.ai.aiConfidenceThreshold * 100)}%
               </div>
             </div>
 
-            <Toggle
-              label="Voice input"
-              checked={settings.voice.voiceEnabled}
-              onChange={(v) => onChange("voice.voiceEnabled", v)}
-            />
-            <Toggle
-              label="Voice auto-submit"
-              checked={settings.voice.voiceAutoSubmit}
-              onChange={(v) => onChange("voice.voiceAutoSubmit", v)}
-            />
+            <Toggle label="Voice input" checked={settings.voice.voiceEnabled} onChange={(v) => onChange("voice.voiceEnabled", v)} />
+            <Toggle label="Voice auto-submit" checked={settings.voice.voiceAutoSubmit} onChange={(v) => onChange("voice.voiceAutoSubmit", v)} />
             <Select
               label="Voice language"
               value={settings.voice.voiceLanguage}
@@ -647,53 +520,26 @@ export default function Settings() {
         </Section>
 
         {/* Gamification */}
-        <Section title="Gamification" icon={<EyeOff className="text-amber-300" />}>
+        <Section title="Gamification" icon={<EyeOff className="text-amber-500 dark:text-amber-300" />}>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Toggle
-              label="Show points & streak"
-              checked={settings.gamification.showGamification}
-              onChange={(v) => onChange("gamification.showGamification", v)}
-            />
-            <Toggle
-              label="Allow leaderboard entry"
-              checked={settings.gamification.allowLeaderboard}
-              onChange={(v) => onChange("gamification.allowLeaderboard", v)}
-            />
+            <Toggle label="Show points & streak" checked={settings.gamification.showGamification} onChange={(v) => onChange("gamification.showGamification", v)} />
+            <Toggle label="Allow leaderboard entry" checked={settings.gamification.allowLeaderboard} onChange={(v) => onChange("gamification.allowLeaderboard", v)} />
           </div>
-          <button onClick={resetGamification} className="btn mt-3">
-            Reset my gamification
-          </button>
+          <button onClick={resetGamification} className="btn mt-3">Reset my gamification</button>
         </Section>
 
         {/* Privacy & Security */}
-        <Section title="Privacy & Security" icon={<Shield className="text-rose-300" />}>
+        <Section title="Privacy & Security" icon={<Shield className="text-rose-500 dark:text-rose-300" />}>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Toggle
-              label="Hide balances by default"
-              checked={settings.privacy.hideBalances}
-              onChange={(v) => onChange("privacy.hideBalances", v)}
-            />
-            <Toggle
-              label="Blur on app switch"
-              checked={settings.privacy.blurOnSwitch}
-              onChange={(v) => onChange("privacy.blurOnSwitch", v)}
-            />
-            <Input
-              label="Auto-lock after (mins)"
-              type="number"
-              value={String(settings.privacy.autoLockMinutes)}
-              onChange={(v) => onChange("privacy.autoLockMinutes", Number(v || 0))}
-            />
-            <Toggle
-              label="Local encryption (demo)"
-              checked={settings.privacy.localEncryption}
-              onChange={(v) => onChange("privacy.localEncryption", v)}
-            />
+            <Toggle label="Hide balances by default" checked={settings.privacy.hideBalances} onChange={(v) => onChange("privacy.hideBalances", v)} />
+            <Toggle label="Blur on app switch" checked={settings.privacy.blurOnSwitch} onChange={(v) => onChange("privacy.blurOnSwitch", v)} />
+            <Input label="Auto-lock after (mins)" type="number" value={String(settings.privacy.autoLockMinutes)} onChange={(v) => onChange("privacy.autoLockMinutes", Number(v || 0))} />
+            <Toggle label="Local encryption (demo)" checked={settings.privacy.localEncryption} onChange={(v) => onChange("privacy.localEncryption", v)} />
           </div>
         </Section>
 
         {/* Data & Storage */}
-        <Section title="Data & Storage" icon={<Database className="text-sky-300" />}>
+        <Section title="Data & Storage" icon={<Database className="text-sky-500 dark:text-sky-300" />}>
           <div className="flex flex-wrap items-center gap-3">
             <button onClick={exportAll} className="btn">
               <Download size={16} /> Export JSON
@@ -717,12 +563,12 @@ export default function Settings() {
             </button>
           </div>
 
-          <div className="mt-4 rounded-lg border border-gray-800 bg-gray-900/60 p-3">
-            <div className="text-sm text-slate-300 mb-2">Storage usage</div>
-            <div className="text-xs text-slate-400">Total: {formatBytes(storageUsage.total)}</div>
+          <div className="mt-4 rounded-lg ring-1 ring-black/10 bg-white p-3 dark:ring-white/10 dark:bg-gray-900/60">
+            <div className="text-sm text-slate-700 dark:text-slate-300 mb-2">Storage usage</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">Total: {formatBytes(storageUsage.total)}</div>
             <ul className="mt-2 grid sm:grid-cols-2 gap-2">
               {storageUsage.items.slice(0, 8).map((it) => (
-                <li key={it.key} className="text-xs text-slate-400 truncate">
+                <li key={it.key} className="text-xs text-slate-600 dark:text-slate-400 truncate">
                   {it.key}: {formatBytes(it.size)}
                 </li>
               ))}
@@ -731,23 +577,11 @@ export default function Settings() {
         </Section>
 
         {/* Developer & Integrations */}
-        <Section title="Developer & Integrations" icon={<Languages className="text-teal-300" />}>
+        <Section title="Developer & Integrations" icon={<Languages className="text-teal-500 dark:text-teal-300" />}>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Toggle
-              label="Command palette"
-              checked={settings.integrations.commandPalette}
-              onChange={(v) => onChange("integrations.commandPalette", v)}
-            />
-            <Toggle
-              label="PWA install prompt"
-              checked={settings.integrations.pwaInstallPrompt}
-              onChange={(v) => onChange("integrations.pwaInstallPrompt", v)}
-            />
-            <Toggle
-              label="Debug logs"
-              checked={settings.developer.enableDebug}
-              onChange={(v) => onChange("developer.enableDebug", v)}
-            />
+            <Toggle label="Command palette" checked={settings.integrations.commandPalette} onChange={(v) => onChange("integrations.commandPalette", v)} />
+            <Toggle label="PWA install prompt" checked={settings.integrations.pwaInstallPrompt} onChange={(v) => onChange("integrations.pwaInstallPrompt", v)} />
+            <Toggle label="Debug logs" checked={settings.developer.enableDebug} onChange={(v) => onChange("developer.enableDebug", v)} />
           </div>
         </Section>
       </div>
@@ -758,10 +592,10 @@ export default function Settings() {
 /* UI helpers */
 function Section({ title, icon, children }) {
   return (
-    <section className="rounded-2xl border border-gray-800 bg-gray-900/70 p-5">
+    <section className="rounded-2xl ring-1 ring-black/10 bg-white p-5 dark:ring-white/10 dark:bg-gray-900/70">
       <div className="flex items-center gap-2 mb-3">
         {icon}
-        <h2 className="text-lg font-semibold">{title}</h2>
+        <h2 className="text-lg font-semibold text-slate-800 dark:text-white">{title}</h2>
       </div>
       {children}
     </section>
@@ -770,13 +604,13 @@ function Section({ title, icon, children }) {
 function Input({ label, value, onChange, placeholder, type = "text" }) {
   return (
     <label className="text-sm">
-      <div className="text-slate-300 mb-1">{label}</div>
+      <div className="text-slate-700 dark:text-slate-300 mb-1">{label}</div>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full p-2 rounded-md bg-gray-950 border border-gray-800"
+        className="w-full p-2 rounded-md bg-white border border-gray-300 text-gray-900 focus:outline-none dark:bg-gray-950 dark:border-gray-800 dark:text-white"
       />
     </label>
   );
@@ -784,11 +618,11 @@ function Input({ label, value, onChange, placeholder, type = "text" }) {
 function Select({ label, value, onChange, options }) {
   return (
     <label className="text-sm">
-      <div className="text-slate-300 mb-1">{label}</div>
+      <div className="text-slate-700 dark:text-slate-300 mb-1">{label}</div>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-2 rounded-md bg-gray-950 border border-gray-800"
+        className="w-full p-2 rounded-md bg-white border border-gray-300 text-gray-900 focus:outline-none dark:bg-gray-950 dark:border-gray-800 dark:text-white"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -801,21 +635,15 @@ function Select({ label, value, onChange, options }) {
 }
 function Toggle({ label, checked, onChange }) {
   return (
-    <label className="flex items-center justify-between gap-3 rounded-md border border-gray-800 bg-gray-950 px-3 py-2">
-      <span className="text-sm text-slate-300">{label}</span>
+    <label className="flex items-center justify-between gap-3 rounded-md ring-1 ring-black/10 bg-white px-3 py-2 dark:ring-white/10 dark:bg-gray-950">
+      <span className="text-sm text-slate-700 dark:text-slate-300">{label}</span>
       <button
         type="button"
         onClick={() => onChange(!checked)}
-        className={`w-10 h-6 rounded-full p-0.5 transition ${
-          checked ? "bg-cyan-500" : "bg-gray-700"
-        }`}
+        className={`w-10 h-6 rounded-full p-0.5 transition ${checked ? "bg-cyan-500" : "bg-gray-300 dark:bg-gray-700"}`}
         aria-pressed={checked}
       >
-        <span
-          className={`block w-5 h-5 rounded-full bg-white transition ${
-            checked ? "translate-x-4" : ""
-          }`}
-        />
+        <span className={`block w-5 h-5 rounded-full bg-white transition ${checked ? "translate-x-4" : ""}`} />
       </button>
     </label>
   );
@@ -824,9 +652,11 @@ function ThemeButton({ active, onClick, icon, label }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-md border ${
-        active ? "border-cyan-500 bg-cyan-500/10" : "border-gray-800 bg-gray-900/60 hover:bg-gray-900"
-      } flex items-center gap-2 text-sm`}
+      className={`px-3 py-1.5 rounded-md ring-1 text-sm flex items-center gap-2 transition
+        ${active
+          ? "ring-cyan-500 bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:ring-cyan-500 dark:text-cyan-300"
+          : "ring-black/10 bg-white text-slate-800 hover:bg-gray-50 dark:ring-white/10 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
+        }`}
       title={label}
     >
       {icon} {label}
@@ -862,8 +692,7 @@ function setPath(obj, path, value) {
 }
 function applyTheme(mode) {
   const root = document.documentElement;
-  const sysDark =
-    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const sysDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   if (mode === "dark" || (mode === "system" && sysDark)) {
     root.classList.add("dark");
   } else {
@@ -895,17 +724,20 @@ function escapeICS(s) {
 /* styles */
 const style = document.createElement("style");
 style.innerHTML = `
-:root {
-  --accent: #8b5cf6;
-  --font-scale: 100%;
-}
+:root { --accent: #8b5cf6; --font-scale: 100%; }
 :root[data-density="compact"] * { --tw-space-y-reverse: 0; }
 .reduced-motion * { transition-duration: 0ms !important; animation-duration: 0ms !important; }
 .high-contrast { filter: contrast(1.1); }
-.btn { display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .75rem; border-radius:.5rem; background-color:rgb(31 41 55); border:1px solid rgb(31 41 55); }
-.btn:hover { background-color:rgb(55 65 81); }
-.btn-danger { display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .75rem; border-radius:.5rem; background-color:#7f1d1d; border:1px solid #7f1d1d; }
-.btn-danger:hover { background-color:#991b1b; }
+
+.btn { display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .75rem; border-radius:.5rem; background-color:#ffffff; color:#111827; border:1px solid rgba(17,24,39,0.1); }
+.btn:hover { background-color:#f3f4f6; }
+.dark .btn { background-color:rgb(31 41 55); color:#e5e7eb; border-color:rgb(31 41 55); }
+.dark .btn:hover { background-color:rgb(55 65 81); }
+
+.btn-danger { display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .75rem; border-radius:.5rem; background-color:#fee2e2; color:#7f1d1d; border:1px solid #fecaca; }
+.btn-danger:hover { background-color:#fecaca; }
+.dark .btn-danger { background-color:#7f1d1d; color:#fee2e2; border-color:#7f1d1d; }
+.dark .btn-danger:hover { background-color:#991b1b; }
 `;
 if (!document.getElementById("settings-inline-style")) {
   style.id = "settings-inline-style";

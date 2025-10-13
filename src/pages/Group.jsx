@@ -1,3 +1,4 @@
+// src/pages/Group.jsx
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -49,7 +50,6 @@ export default function Group() {
   const nav = useNavigate();
   const [params, setParams] = useSearchParams();
 
-  // Participants (editable, unlimited)
   const [participants, setParticipants] = useState(() => {
     return (
       loadLocal(PART_KEY_V1, null) ||
@@ -92,34 +92,28 @@ export default function Group() {
     return p;
   };
 
-  // Groups
   const [groups, setGroups] = useState(() => loadLocal(GROUP_KEY, []));
   const [selectedGroup, setSelectedGroup] = useState(null);
 
-  // Modals
   const [showAddGroup, setShowAddGroup] = useState(false);
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showSettle, setShowSettle] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
 
-  // Filters
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterMember, setFilterMember] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Toast
   const [toast, setToast] = useState(null);
   const showToast = (text, type = "info") => {
     setToast({ text, type });
     setTimeout(() => setToast(null), 2500);
   };
 
-  // Persist groups
   useEffect(() => {
     saveLocal(GROUP_KEY, groups);
   }, [groups]);
 
-  // Return from Pay flow
   useEffect(() => {
     const paid = params.get("paid");
     const gid = params.get("gid");
@@ -136,13 +130,11 @@ export default function Group() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Helpers to support legacy/new shapes
   const groupMemberKeys = (group) => group.members || [];
   const expensePayerKey = (e) => e.payerId || e.payer;
   const settlementFromKey = (s) => s.fromId || s.from;
   const settlementToKey = (s) => s.toId || s.to;
 
-  // Balances
   const calcBalances = (group) => {
     const members = groupMemberKeys(group);
     const balance = {};
@@ -223,7 +215,6 @@ export default function Group() {
   const totalSpent = (group) =>
     (group.expenses || []).reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
-  // Pay via UPI
   const paySettlementViaUPI = (group, fromKey, toKey, amount) => {
     const fromParticipant =
       participantIdToParticipant[fromKey] || nameToParticipant[fromKey?.toLowerCase()];
@@ -249,7 +240,6 @@ export default function Group() {
     });
   };
 
-  // Export CSV
   const exportGroupCSV = (group) => {
     const lines = [];
     lines.push(`Group,${escapeCsv(group.name)},Category,${escapeCsv(group.category || "")}`);
@@ -301,7 +291,6 @@ export default function Group() {
     return str;
   }
 
-  // CRUD
   const createGroup = (name, category, memberIds) => {
     const g = {
       id: uid("grp"),
@@ -433,7 +422,6 @@ export default function Group() {
     showToast("Settlement records created", "success");
   };
 
-  // Filtered expenses
   const filteredExpenses = useMemo(() => {
     if (!selectedGroup) return [];
     const q = searchQuery.toLowerCase();
@@ -452,7 +440,7 @@ export default function Group() {
   }, [selectedGroup, searchQuery, filterMember]);
 
   return (
-    <div className="p-6 min-h-screen pt-20 bg-gray-950/60 backdrop-blur text-slate-100">
+    <div className="p-6 min-h-screen pt-20 bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200 text-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-slate-100 transition-colors">
       {!selectedGroup && (
         <>
           <div className="flex justify-between items-center mb-6">
@@ -462,7 +450,7 @@ export default function Group() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowAddGroup(true)}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md text-white"
               >
                 <PlusCircle size={16} /> New Group
               </button>
@@ -470,7 +458,7 @@ export default function Group() {
           </div>
 
           {groups.length === 0 ? (
-            <div className="text-center text-slate-400 mt-10">No groups yet. Create one!</div>
+            <div className="text-center text-slate-600 dark:text-slate-400 mt-10">No groups yet. Create one!</div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {groups.map((g) => (
@@ -479,14 +467,14 @@ export default function Group() {
                   layout
                   whileHover={{ scale: 1.02 }}
                   onClick={() => setSelectedGroup(g)}
-                  className="cursor-pointer p-4 rounded-xl bg-gray-900/70 border border-gray-800 hover:border-blue-600 transition"
+                  className="cursor-pointer p-4 rounded-xl bg-white border border-gray-200 shadow hover:border-blue-600 transition dark:bg-gray-900/70 dark:border-gray-800"
                 >
                   <div className="font-semibold text-lg">{g.name}</div>
-                  <div className="text-xs text-slate-400 mb-2">{g.category}</div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400 mb-2">{g.category}</div>
                   <div className="text-sm">
                     Members: {groupMemberKeys(g).map((m) => displayName(m)).join(", ")}
                   </div>
-                  <div className="mt-2 text-blue-400 font-semibold">₹{totalSpent(g)} total</div>
+                  <div className="mt-2 text-blue-600 dark:text-blue-400 font-semibold">₹{totalSpent(g)}</div>
                 </motion.div>
               ))}
             </div>
@@ -498,7 +486,7 @@ export default function Group() {
         <div>
           <button
             onClick={() => setSelectedGroup(null)}
-            className="flex items-center gap-2 mb-4 text-slate-400 hover:text-slate-200"
+            className="flex items-center gap-2 mb-4 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
           >
             <ArrowLeft size={16} /> Back
           </button>
@@ -508,7 +496,7 @@ export default function Group() {
               <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
                 <Wallet /> {selectedGroup.name}
               </h2>
-              <div className="text-slate-400">
+              <div className="text-slate-700 dark:text-slate-400">
                 {selectedGroup.category} •{" "}
                 {groupMemberKeys(selectedGroup).map((m) => displayName(m)).join(", ")}
               </div>
@@ -517,37 +505,37 @@ export default function Group() {
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setShowAddExpense(true)}
-                className="bg-green-600 hover:bg-green-700 px-3 py-2 rounded-md flex items-center gap-2"
+                className="bg-green-600 hover:bg-green-700 px-3 py-2 rounded-md flex items-center gap-2 text-white"
               >
                 <PlusCircle size={14} /> Add Expense
               </button>
               <button
                 onClick={() => setShowSettle(true)}
-                className="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded-md flex items-center gap-2"
+                className="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded-md flex items-center gap-2 text-white"
               >
                 <Wallet size={14} /> Record Settlement
               </button>
               <button
                 onClick={() => settleAllSuggested(selectedGroup)}
-                className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md flex items-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md flex items-center gap-2 text-white"
               >
                 <Calculator size={14} /> Settle All
               </button>
               <button
                 onClick={() => exportGroupCSV(selectedGroup)}
-                className="bg-gray-800 hover:bg-gray-700 px-3 py-2 rounded-md flex items-center gap-2"
+                className="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 px-3 py-2 rounded-md flex items-center gap-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white dark:border-gray-700"
               >
                 <Download size={14} /> Export CSV
               </button>
               <button
                 onClick={() => setFilterOpen((s) => !s)}
-                className="bg-gray-800 hover:bg-gray-700 px-3 py-2 rounded-md flex items-center gap-2"
+                className="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 px-3 py-2 rounded-md flex items-center gap-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white dark:border-gray-700"
               >
                 <Filter size={14} /> Filters
               </button>
               <button
                 onClick={() => setShowMembers(true)}
-                className="bg-gray-800 hover:bg-gray-700 px-3 py-2 rounded-md flex items-center gap-2"
+                className="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 px-3 py-2 rounded-md flex items-center gap-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white dark:border-gray-700"
               >
                 <UserPlus size={14} /> Manage Members
               </button>
@@ -560,14 +548,14 @@ export default function Group() {
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
-                className="mt-3 p-3 rounded-lg bg-gray-900/70 border border-gray-800 flex flex-wrap items-center gap-3"
+                className="mt-3 p-3 rounded-lg bg-white border border-gray-200 flex flex-wrap items-center gap-3 dark:bg-gray-900/70 dark:border-gray-800"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-slate-400">Member:</span>
+                  <span className="text-sm text-slate-700 dark:text-slate-400">Member:</span>
                   <select
                     value={filterMember}
                     onChange={(e) => setFilterMember(e.target.value)}
-                    className="p-2 rounded bg-gray-950 border border-gray-800"
+                    className="p-2 rounded bg-white border border-gray-300 dark:bg-gray-950 dark:border-gray-800"
                   >
                     <option value="all">All</option>
                     {groupMemberKeys(selectedGroup).map((m) => (
@@ -578,12 +566,12 @@ export default function Group() {
                   </select>
                 </div>
                 <div className="flex items-center gap-2 flex-1 min-w-[220px]">
-                  <Search size={16} className="text-slate-400" />
+                  <Search size={16} className="text-slate-500 dark:text-slate-400" />
                   <input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search expenses..."
-                    className="flex-1 p-2 rounded bg-gray-950 border border-gray-800"
+                    className="flex-1 p-2 rounded bg-white border border-gray-300 dark:bg-gray-950 dark:border-gray-800"
                   />
                 </div>
               </motion.div>
@@ -594,34 +582,33 @@ export default function Group() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Expenses</h3>
               {filteredExpenses.length === 0 && (
-                <div className="text-slate-400 text-sm">No expenses for current filter.</div>
+                <div className="text-slate-600 dark:text-slate-400 text-sm">No expenses for current filter.</div>
               )}
               {filteredExpenses.map((e) => {
                 const payer = displayName(expensePayerKey(e));
                 return (
                   <div
                     key={e.id}
-                    className="p-3 rounded-lg bg-gray-900/60 mb-2 border border-gray-800"
+                    className="p-3 rounded-lg bg-white border border-gray-200 mb-2 shadow-sm dark:bg-gray-900/60 dark:border-gray-800"
                   >
                     <div className="flex justify-between gap-3">
                       <div>
                         <div className="font-semibold">{e.title}</div>
-                        <div className="text-xs text-slate-400">
-                          {payer} paid ₹{Number(e.amount || 0).toFixed(2)} •{" "}
-                          {e.splitType || "equal"}
+                        <div className="text-xs text-slate-600 dark:text-slate-400">
+                          {payer} paid ₹{Number(e.amount || 0).toFixed(2)} • {e.splitType || "equal"}
                         </div>
                         {e.receiptUrl ? (
                           <a
                             href={e.receiptUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-xs text-cyan-300 underline"
+                            className="text-xs text-cyan-700 underline dark:text-cyan-300"
                           >
                             Receipt
                           </a>
                         ) : null}
                       </div>
-                      <div className="text-blue-400 font-medium">
+                      <div className="text-blue-700 dark:text-blue-400 font-medium">
                         ₹{Number(e.amount || 0).toFixed(2)}
                       </div>
                     </div>
@@ -631,12 +618,12 @@ export default function Group() {
 
               <h3 className="text-lg font-semibold mt-6 mb-2">Settlements</h3>
               {(selectedGroup.settlements || []).length === 0 && (
-                <div className="text-slate-400 text-sm">No settlements yet.</div>
+                <div className="text-slate-600 dark:text-slate-400 text-sm">No settlements yet.</div>
               )}
               {(selectedGroup.settlements || []).map((s) => (
                 <div
                   key={s.id}
-                  className="p-3 rounded-lg bg-gray-900/60 mb-2 border border-gray-800 text-sm"
+                  className="p-3 rounded-lg bg-white border border-gray-200 mb-2 text-sm shadow-sm dark:bg-gray-900/60 dark:border-gray-800"
                 >
                   {displayName(settlementFromKey(s))} paid {displayName(settlementToKey(s))} ₹
                   {Number(s.amount || 0).toFixed(2)}
@@ -656,10 +643,10 @@ export default function Group() {
                     key={m}
                     className={`p-3 rounded-lg mb-2 border ${
                       val > 0
-                        ? "bg-green-900/40 border-green-700 text-green-300"
+                        ? "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/40 dark:border-green-700 dark:text-green-300"
                         : val < 0
-                        ? "bg-red-900/40 border-red-700 text-red-300"
-                        : "bg-gray-900/60 border-gray-800 text-slate-300"
+                        ? "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/40 dark:border-red-700 dark:text-red-300"
+                        : "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900/60 dark:border-gray-800 dark:text-slate-300"
                     }`}
                   >
                     {displayName(m)}:{" "}
@@ -672,24 +659,23 @@ export default function Group() {
                 ));
               })()}
 
-              <div className="mt-4 text-sm text-slate-400">
+              <div className="mt-4 text-sm text-slate-700 dark:text-slate-400">
                 Total Spent: ₹{totalSpent(selectedGroup)}
               </div>
 
-              {/* Suggested settlements + Pay */}
               <div className="mt-6">
                 <h4 className="text-md font-semibold mb-2">Suggested Settlements</h4>
                 {(() => {
                   const bal = calcBalances(selectedGroup);
                   const sugg = computeSuggestedSettlements(bal);
                   if (!sugg.length)
-                    return <div className="text-slate-400 text-sm">All settled! 🎉</div>;
+                    return <div className="text-slate-600 dark:text-slate-400 text-sm">All settled! 🎉</div>;
                   return (
                     <ul className="space-y-2">
                       {sugg.map((s, i) => (
                         <li
                           key={`${s.from}-${s.to}-${i}`}
-                          className="p-3 rounded-lg bg-gray-900/60 border border-gray-800 flex items-center justify-between gap-3"
+                          className="p-3 rounded-lg bg-white border border-gray-200 flex items-center justify-between gap-3 shadow-sm dark:bg-gray-900/60 dark:border-gray-800"
                         >
                           <div className="text-sm">
                             {displayName(s.from)} pays {displayName(s.to)}
@@ -700,7 +686,7 @@ export default function Group() {
                               onClick={() =>
                                 paySettlementViaUPI(selectedGroup, s.from, s.to, s.amount)
                               }
-                              className="px-3 py-1.5 rounded-md bg-purple-600 hover:bg-purple-700 flex items-center gap-1.5"
+                              className="px-3 py-1.5 rounded-md bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-1.5"
                             >
                               <CreditCard size={16} /> Pay via UPI
                             </button>
@@ -792,14 +778,14 @@ function Modal({ children, onClose }) {
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="bg-gray-900/95 border border-gray-800 p-6 rounded-xl w-full max-w-lg relative max-h-[85vh] overflow-y-auto"
+        className="bg-white border border-gray-200 p-6 rounded-xl w-full max-w-lg relative max-h-[85vh] overflow-y-auto dark:bg-gray-900/95 dark:border-gray-800"
         initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.96, opacity: 0 }}
       >
         <button
           onClick={onClose}
-          className="sticky -top-2 float-right text-slate-400 hover:text-slate-100"
+          className="sticky -top-2 float-right text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
         >
           <X size={18} />
         </button>
@@ -839,12 +825,12 @@ function AddGroupForm({ onCreate, participants, addParticipantByName }) {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Group name"
-        className="w-full mb-3 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mb-3 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       />
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        className="w-full mb-3 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mb-3 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       >
         <option>Friends</option>
         <option>Office</option>
@@ -852,26 +838,26 @@ function AddGroupForm({ onCreate, participants, addParticipantByName }) {
         <option>Society</option>
       </select>
 
-      <div className="mb-2 text-sm text-slate-300">Add new member</div>
+      <div className="mb-2 text-sm text-slate-700 dark:text-slate-300">Add new member</div>
       <div className="flex gap-2 mb-3">
         <input
           value={newMember}
           onChange={(e) => setNewMember(e.target.value)}
           placeholder="Name (press Add)"
-          className="flex-1 p-2 rounded bg-gray-800 border border-gray-700"
+          className="flex-1 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
         />
-        <button onClick={addNewMember} className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-700">
+        <button onClick={addNewMember} className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white">
           Add
         </button>
       </div>
 
       <div className="flex items-center gap-2 mb-2">
-        <Search size={16} className="text-slate-400" />
+        <Search size={16} className="text-slate-500 dark:text-slate-400" />
         <input
           value={memberSearch}
           onChange={(e) => setMemberSearch(e.target.value)}
           placeholder="Search existing members..."
-          className="flex-1 p-2 rounded bg-gray-800 border border-gray-700"
+          className="flex-1 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
         />
       </div>
 
@@ -882,8 +868,8 @@ function AddGroupForm({ onCreate, participants, addParticipantByName }) {
             onClick={() => toggleMember(p.id)}
             className={`px-3 py-1 rounded-md border text-left ${
               selected.includes(p.id)
-                ? "bg-blue-600 border-blue-500"
-                : "bg-gray-800 border-gray-700"
+                ? "bg-blue-600 border-blue-500 text-white"
+                : "bg-white border-gray-300 dark:bg-gray-800 dark:border-gray-700"
             }`}
           >
             {p.name}
@@ -893,7 +879,7 @@ function AddGroupForm({ onCreate, participants, addParticipantByName }) {
 
       <button
         onClick={() => onCreate(name, category, selected)}
-        className="mt-4 bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md w-full"
+        className="mt-4 bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md w-full text-white"
       >
         Create
       </button>
@@ -957,20 +943,20 @@ function AddExpenseForm({ onAdd, group, participants, participantIdToParticipant
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Title"
-        className="w-full mb-3 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mb-3 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       />
       <input
         type="number"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         placeholder="Amount"
-        className="w-full mb-3 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mb-3 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       />
-      <label className="text-sm text-slate-400">Paid by:</label>
+      <label className="text-sm text-slate-700 dark:text-slate-400">Paid by:</label>
       <select
         value={payerId}
         onChange={(e) => setPayerId(e.target.value)}
-        className="w-full mb-3 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mb-3 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       >
         {memberKeys.map((m) => {
           const p =
@@ -987,7 +973,7 @@ function AddExpenseForm({ onAdd, group, participants, participantIdToParticipant
       <select
         value={splitType}
         onChange={(e) => setSplitType(e.target.value)}
-        className="w-full mb-3 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mb-3 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       >
         <option value="equal">Equal Split</option>
         <option value="custom">Custom Amounts</option>
@@ -1003,7 +989,7 @@ function AddExpenseForm({ onAdd, group, participants, participantIdToParticipant
               type="number"
               onChange={handleNumChange(setCustomSplits, m)}
               placeholder="₹"
-              className="w-24 p-1 rounded bg-gray-800 border border-gray-700 text-right"
+              className="w-24 p-1 rounded bg-white border border-gray-300 text-right dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
         ))}
@@ -1016,7 +1002,7 @@ function AddExpenseForm({ onAdd, group, participants, participantIdToParticipant
               type="number"
               onChange={handleNumChange(setPercentageSplits, m)}
               placeholder="%"
-              className="w-24 p-1 rounded bg-gray-800 border border-gray-700 text-right"
+              className="w-24 p-1 rounded bg-white border border-gray-300 text-right dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
         ))}
@@ -1029,7 +1015,7 @@ function AddExpenseForm({ onAdd, group, participants, participantIdToParticipant
               type="number"
               onChange={handleNumChange(setShares, m)}
               placeholder="shares"
-              className="w-24 p-1 rounded bg-gray-800 border border-gray-700 text-right"
+              className="w-24 p-1 rounded bg-white border border-gray-300 text-right dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
         ))}
@@ -1038,12 +1024,12 @@ function AddExpenseForm({ onAdd, group, participants, participantIdToParticipant
         value={receiptUrl}
         onChange={(e) => setReceiptUrl(e.target.value)}
         placeholder="Receipt URL (optional)"
-        className="w-full mt-2 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mt-2 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       />
 
       <button
         onClick={submit}
-        className="mt-4 bg-green-600 hover:bg-green-700 px-3 py-2 rounded-md w-full"
+        className="mt-4 bg-green-600 hover:bg-green-700 px-3 py-2 rounded-md w-full text-white"
       >
         Add Expense
       </button>
@@ -1062,11 +1048,11 @@ function SettleForm({ onSettle, group, displayName }) {
   return (
     <div>
       <h2 className="text-lg font-semibold mb-4">Record Settlement</h2>
-      <label className="text-sm text-slate-400">From</label>
+      <label className="text-sm text-slate-700 dark:text-slate-400">From</label>
       <select
         value={fromKey}
         onChange={(e) => setFromKey(e.target.value)}
-        className="w-full mb-3 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mb-3 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       >
         {memberKeys.map((m) => (
           <option key={m} value={m}>
@@ -1075,11 +1061,11 @@ function SettleForm({ onSettle, group, displayName }) {
         ))}
       </select>
 
-      <label className="text-sm text-slate-400">To</label>
+      <label className="text-sm text-slate-700 dark:text-slate-400">To</label>
       <select
         value={toKey}
         onChange={(e) => setToKey(e.target.value)}
-        className="w-full mb-3 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mb-3 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       >
         {memberKeys.map((m) => (
           <option key={m} value={m}>
@@ -1093,11 +1079,11 @@ function SettleForm({ onSettle, group, displayName }) {
         placeholder="Amount"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        className="w-full mb-3 p-2 rounded bg-gray-800 border border-gray-700"
+        className="w-full mb-3 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
       />
       <button
         onClick={() => onSettle(fromKey, toKey, Number(amount || 0))}
-        className="mt-2 bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded-md w-full"
+        className="mt-2 bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded-md w-full text-white"
       >
         Save
       </button>
@@ -1136,17 +1122,17 @@ function ManageMembersForm({
       <h2 className="text-lg font-semibold mb-4">Manage Members</h2>
 
       <div className="mb-3">
-        <div className="text-sm text-slate-400 mb-1">Current Members</div>
+        <div className="text-sm text-slate-700 dark:text-slate-400 mb-1">Current Members</div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {memberIds.map((m) => (
             <div
               key={m}
-              className="px-3 py-2 rounded-md bg-gray-800 border border-gray-700 flex items-center justify-between gap-2"
+              className="px-3 py-2 rounded-md bg-white border border-gray-300 flex items-center justify-between gap-2 dark:bg-gray-800 dark:border-gray-700"
             >
               <span className="truncate">{displayName(m)}</span>
               <button
                 onClick={() => onRemove(m)}
-                className="text-red-400 hover:text-red-300"
+                className="text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300"
                 title="Remove"
               >
                 <Trash2 size={16} />
@@ -1156,22 +1142,22 @@ function ManageMembersForm({
         </div>
       </div>
 
-      <div className="h-px bg-gray-800 my-4" />
+      <div className="h-px bg-gray-200 dark:bg-gray-800 my-4" />
 
       <div className="mb-3">
-        <div className="text-sm text-slate-400 mb-1">Add Existing</div>
+        <div className="text-sm text-slate-700 dark:text-slate-400 mb-1">Add Existing</div>
         <div className="flex items-center gap-2 mb-2">
-          <Search size={16} className="text-slate-400" />
+          <Search size={16} className="text-slate-500 dark:text-slate-400" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search people..."
-            className="flex-1 p-2 rounded bg-gray-800 border border-gray-700"
+            className="flex-1 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
           />
         </div>
         <div className="max-h-40 overflow-auto grid grid-cols-2 sm:grid-cols-3 gap-2">
           {filtered.length === 0 ? (
-            <div className="text-sm text-slate-500 col-span-full">
+            <div className="text-sm text-slate-600 dark:text-slate-500 col-span-full">
               No matches. Add a new member below.
             </div>
           ) : (
@@ -1179,7 +1165,7 @@ function ManageMembersForm({
               <button
                 key={p.id}
                 onClick={() => addExisting(p.id)}
-                className="px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-left hover:bg-gray-700"
+                className="px-3 py-2 rounded-md bg-white border border-gray-300 text-left hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
               >
                 {p.name}
               </button>
@@ -1188,20 +1174,20 @@ function ManageMembersForm({
         </div>
       </div>
 
-      <div className="h-px bg-gray-800 my-4" />
+      <div className="h-px bg-gray-200 dark:bg-gray-800 my-4" />
 
       <div>
-        <div className="text-sm text-slate-400 mb-1">Add New</div>
+        <div className="text-sm text-slate-700 dark:text-slate-400 mb-1">Add New</div>
         <div className="flex gap-2">
           <input
             value={newMember}
             onChange={(e) => setNewMember(e.target.value)}
             placeholder="Name"
-            className="flex-1 p-2 rounded bg-gray-800 border border-gray-700"
+            className="flex-1 p-2 rounded bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700"
           />
           <button
             onClick={addNew}
-            className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-700"
+            className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white"
           >
             Add
           </button>

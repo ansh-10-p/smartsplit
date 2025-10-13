@@ -39,43 +39,49 @@ function MoneyBagIcon({ isDark }) {
 export default function LandingPage() {
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("darkMode");
-      if (saved !== null) return saved === "true";
+      const saved = localStorage.getItem("theme");
+      if (saved) return saved === "dark";
       return window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
-    return false;
+    return true;
   });
 
   useEffect(() => {
-    localStorage.setItem("darkMode", String(darkMode));
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
     document.documentElement.classList.toggle("dark", darkMode);
   }, [darkMode]);
 
   const gradients = {
-    dark: "from-purple-500 via-pink-500 to-indigo-500",
-    light: "from-teal-400 via-cyan-400 to-blue-500",
+    dark: "from-purple-400 via-fuchsia-300 to-cyan-300",
+    light: "from-cyan-600 via-sky-600 to-emerald-600",
   };
 
-  const textMuted = darkMode ? "text-slate-400" : "text-gray-600";
+  const textMuted = darkMode ? "text-slate-300" : "text-slate-600";
   const cardBg =
     "rounded-xl border transition-shadow duration-300 " +
-    (darkMode ? "bg-gray-900/70 border-gray-800 hover:shadow-purple-500/20" : "bg-white border-gray-200 hover:shadow-cyan-400/20");
+    (darkMode ? "bg-white/10 border-white/10 hover:shadow-purple-500/20 backdrop-blur-md" : "bg-white border-gray-200 hover:shadow-cyan-400/20");
 
   return (
-    <div className={`${darkMode ? "bg-gray-950 text-slate-100" : "bg-white text-gray-900"} min-h-screen`}>
-      {/* Floating theme toggle (no navbar on landing) */}
+    <div className={`${darkMode ? "bg-[#07061A] text-white" : "bg-gradient-to-b from-white via-sky-50 to-emerald-50 text-gray-900"} min-h-screen`}>
+      {/* Ambient glows */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className={`absolute w-[80vmax] h-[80vmax] rounded-full blur-[120px] opacity-40 -top-40 -left-40 ${darkMode ? "bg-fuchsia-700/30" : "bg-cyan-400/25"}`} />
+        <div className={`absolute w-[60vmax] h-[60vmax] rounded-full blur-[120px] opacity-30 bottom-0 right-0 ${darkMode ? "bg-cyan-600/30" : "bg-purple-500/20"}`} />
+      </div>
+
+      {/* Floating theme toggle */}
       <button
         onClick={() => setDarkMode((s) => !s)}
         aria-label="Toggle theme"
-        className={`fixed right-5 top-5 z-10 px-3 py-2 rounded-lg border ${darkMode ? "border-purple-500 hover:bg-gray-800" : "border-cyan-500 hover:bg-gray-100"}`}
+        className={`fixed right-5 top-5 z-10 px-3 py-2 rounded-lg ring-1 ${darkMode ? "ring-white/20 hover:bg-white/10" : "ring-black/10 hover:bg-black/5"}`}
       >
         {darkMode ? "🌞 Light" : "🌙 Dark"}
       </button>
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${darkMode ? "from-purple-900/20 via-fuchsia-900/10 to-cyan-900/20" : "from-cyan-100 via-blue-50 to-emerald-100"}`} />
-        <div className="relative max-w-6xl mx-auto px-6 pt-28 pb-16 grid md:grid-cols-2 gap-12">
+        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${darkMode ? "from-purple-900/10 via-fuchsia-900/5 to-cyan-900/10" : "from-cyan-100 via-blue-50 to-emerald-100"}`} />
+        <div className="relative max-w-6xl mx-auto px-6 pt-28 pb-16 grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h1 className={`text-5xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r ${darkMode ? gradients.dark : gradients.light}`}>
               Split Smart. Pay Easy.
@@ -86,13 +92,13 @@ export default function LandingPage() {
             <div className="flex flex-wrap gap-4">
               <Link
                 to="/signup"
-                className={`px-6 py-3 rounded-xl font-semibold shadow ${darkMode ? "bg-purple-500 hover:bg-purple-600 text-black" : "bg-cyan-500 hover:bg-cyan-600 text-white"}`}
+                className="px-6 py-3 rounded-xl font-semibold shadow text-white bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:brightness-110"
               >
                 Get Started
               </Link>
               <Link
                 to="/dashboard"
-                className={`px-6 py-3 rounded-xl border ${darkMode ? "border-slate-700 hover:bg-slate-800" : "border-cyan-500 hover:bg-cyan-50"}`}
+                className={`px-6 py-3 rounded-xl ring-1 ${darkMode ? "ring-white/15 hover:bg-white/10" : "ring-black/10 hover:bg-white"}`}
               >
                 Live Demo
               </Link>
@@ -102,6 +108,22 @@ export default function LandingPage() {
           <div className="flex items-center justify-center">
             <MoneyBagIcon isDark={darkMode} />
           </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="max-w-6xl mx-auto px-6 py-8">
+        <div className="grid sm:grid-cols-3 gap-6">
+          {[
+            { n: "5k+", t: "Groups managed" },
+            { n: "₹2Cr+", t: "Expenses tracked" },
+            { n: "98%", t: "Settle success (mock)" },
+          ].map((s) => (
+            <div key={s.t} className={`${cardBg} p-6 text-center`}>
+              <div className={`text-3xl font-extrabold ${darkMode ? "text-purple-300" : "text-cyan-600"}`}>{s.n}</div>
+              <div className={textMuted}>{s.t}</div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -130,22 +152,6 @@ export default function LandingPage() {
               </div>
               <h4 className="font-semibold mb-1">{s.title}</h4>
               <p className={textMuted}>{s.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <div className={`grid sm:grid-cols-3 gap-6 ${darkMode ? "" : ""}`}>
-          {[
-            { n: "5k+", t: "Groups managed" },
-            { n: "₹2Cr+", t: "Expenses tracked" },
-            { n: "98%", t: "Settle success (mock)" },
-          ].map((s) => (
-            <div key={s.t} className={`${cardBg} p-6 text-center`}>
-              <div className={`text-3xl font-extrabold ${darkMode ? "text-purple-300" : "text-cyan-600"}`}>{s.n}</div>
-              <div className={textMuted}>{s.t}</div>
             </div>
           ))}
         </div>
@@ -185,10 +191,10 @@ export default function LandingPage() {
             <p className={textMuted}>Start free — export/import anytime from Settings.</p>
           </div>
           <div className="flex gap-3">
-            <Link to="/signup" className={`px-6 py-3 rounded-xl font-semibold ${darkMode ? "bg-purple-500 hover:bg-purple-600 text-black" : "bg-cyan-500 hover:bg-cyan-600 text-white"}`}>
+            <Link to="/signup" className="px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:brightness-110">
               Create account
             </Link>
-            <Link to="/reminders" className={`px-6 py-3 rounded-xl border ${darkMode ? "border-slate-700 hover:bg-slate-800" : "border-cyan-500 hover:bg-cyan-50"}`}>
+            <Link to="/reminders" className={`px-6 py-3 rounded-xl ring-1 ${darkMode ? "ring-white/15 hover:bg-white/10" : "ring-black/10 hover:bg-white"}`}>
               Try reminders
             </Link>
           </div>
