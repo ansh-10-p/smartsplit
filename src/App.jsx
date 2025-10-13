@@ -1,46 +1,103 @@
-import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+
+// Pages
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Summary from "./pages/Summary";
 import UpiPay from "./pages/UpiPay";
-import AddExpense from "./pages/AddExpense";
-import BalanceSummary from "./pages/BalanceSummary";
-import Analytics from "./pages/Analytics";
-import Groups from "./pages/Groups";
+import Transactions from "./pages/Transactions";
+import Group from "./pages/Group";
+import Reminders from "./pages/Reminders";
+import Settings from "./pages/Settings";
+
+// Components
+import Navbar from "./components/Navbar";
 import CursorGlow from "./components/CursorGlow";
 import CommandPalette from "./components/CommandPalette";
+import AnimatedGrid from "./components/AnimatedGrid";
 
-export default function App(){
+// Context
+export const AuthContext = React.createContext({
+  user: null,
+  login: () => {},
+  logout: () => {},
+});
+
+export default function App() {
+  const [user, setUser] = useState(() =>
+    JSON.parse(localStorage.getItem("smartsplit_user") || "null")
+  );
+  const navigate = useNavigate();
   const location = useLocation();
+  const hideNavbar = location.pathname === "/";
+
+  useEffect(() => {
+    localStorage.setItem("smartsplit_user", JSON.stringify(user));
+  }, [user]);
+
+  const login = (u) => {
+    setUser(u);
+    navigate("/dashboard");
+  };
+
+  const logout = () => {
+    setUser(null);
+    navigate("/");
+  };
+
+  const PrivateRoute = ({ element }) => {
+    const storedUser = JSON.parse(
+      localStorage.getItem("smartsplit_user") || "null"
+    );
+    return storedUser ? element : <Login />;
+  };
+
   return (
-    <div className="min-h-screen">
-      <CursorGlow />
-      <CommandPalette />
-      <AnimatePresence mode="wait">
-        <motion.div key={location.pathname}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}>
-          <Routes location={location}>
+    <AuthContext.Provider value={{ user, login, logout }}>
+      <div className="min-h-screen text-slate-100 relative">
+        <AnimatedGrid />
+        <CursorGlow />
+        <CommandPalette />
+
+        {!hideNavbar && <Navbar />}
+
+        <div className={hideNavbar ? "" : "pt-20"}>
+          <Routes>
+            {/* Settings / Reminders / UPI */}
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/reminders" element={<Reminders />} />
+            <Route path="/upi" element={<UpiPay />} />
+
+            {/* Public */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/summary" element={<Summary />} />
-            <Route path="/upi" element={<UpiPay />} />
-            <Route path="/add-expense" element={<AddExpense />} />
-            <Route path="/balance-summary" element={<BalanceSummary />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/groups" element={<Groups />} />
-            <Route path="*" element={<div className="p-6 text-center text-slate-300">Page not found</div>} />
+
+            {/* Protected */}
+            <Route
+              path="/dashboard"
+              element={<PrivateRoute element={<Dashboard />} />}
+            />
+            <Route
+              path="/summary"
+              element={<PrivateRoute element={<Summary />} />}
+            />
+            <Route
+              path="/transactions"
+              element={<PrivateRoute element={<Transactions />} />}
+            />
+            <Route
+              path="/groups"
+              element={<PrivateRoute element={<Group />} />}
+            />
+
+            {/* (If you had a duplicate /upi route below, it’s safe to keep just one) */}
           </Routes>
-        </motion.div>
-      </AnimatePresence>
-    </div>
+        </div>
+      </div>
+    </AuthContext.Provider>
   );
 }

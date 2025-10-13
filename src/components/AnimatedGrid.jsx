@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function AnimatedGrid(){
+export default function AnimatedGrid() {
   return (
     <div className="pointer-events-none absolute inset-0 -z-10">
-      <svg className="w-full h-full opacity-20" preserveAspectRatio="none">
+      <svg className="w-full h-full opacity-10" preserveAspectRatio="none">
         <defs>
           <linearGradient id="g1" x1="0" x2="1">
             <stop offset="0" stopColor="#7C3AED" stopOpacity="0.12" />

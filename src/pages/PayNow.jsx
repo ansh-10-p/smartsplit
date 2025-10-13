@@ -3,11 +3,11 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 const EXP_KEY = "smartsplit_expenses_v1";
 const PART_KEY = "smartsplit_participants_v1";
+const GROUP_KEY = "smartsplit_groups_v1";
 
 function uid(prefix = "id") {
   return `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
 }
-
 function loadLocal(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
@@ -16,7 +16,6 @@ function loadLocal(key, fallback) {
     return fallback;
   }
 }
-
 function saveLocal(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
@@ -28,7 +27,6 @@ export default function UpiPay() {
 
   const state = location.state || {};
   const participants = loadLocal(PART_KEY, []);
-
   const participantIdToParticipant = useMemo(() => {
     const map = {};
     participants.forEach((p) => (map[p.id] = p));
@@ -36,7 +34,7 @@ export default function UpiPay() {
   }, [participants]);
 
   const fromState = state.from || null; // debtor
-  const toState = state.to || null; // creditor
+  const toState = state.to || null;     // creditor
   const fromNameParam = params.get("fromName");
   const toNameParam = params.get("toName");
 
@@ -68,8 +66,8 @@ export default function UpiPay() {
       : 0;
   const note = state.note ?? params.get("note") ?? "SmartSplit Payment";
 
-  const rid = state.rid || params.get("rid") || null;
   const returnTo = state.returnTo || params.get("returnTo") || "/dashboard";
+  const groupId = state.groupId || params.get("groupId") || null;
 
   const [upiId, setUpiId] = useState(params.get("upi") || "example@upi");
   const [loading, setLoading] = useState(false);
@@ -87,19 +85,15 @@ export default function UpiPay() {
     setToast({ text, type });
     setTimeout(() => setToast(null), 2200);
   }
-
   function copyLink() {
     navigator.clipboard.writeText(upiLink).then(() => showToast("UPI link copied", "success"));
   }
 
-  // Record settlement similar to dashboard
-  function recordSettlement() {
+  // Global expense record (like dashboard settlement)
+  function recordGlobalSettlement() {
     const fromId = resolvedFrom?.id;
     const toId = resolvedTo?.id;
-    if (!fromId || !toId) {
-      showToast("Unable to record payment without participant IDs", "error");
-      return false;
-    }
+    if (!fromId || !toId) return true; // still allow group-only record
     const e = {
       id: uid("exp"),
       title: `Settlement ${fromName} → ${toName}`,
@@ -114,6 +108,32 @@ export default function UpiPay() {
     return true;
   }
 
+  // If a groupId is present, also add settlement to that group in local storage
+  function recordGroupSettlement() {
+    if (!groupId) return true;
+    const groups = loadLocal(GROUP_KEY, []);
+    const idx = groups.findIndex((g) => `${g.id}` === `${groupId}`);
+    if (idx === -1) return false;
+    const fromKey = resolvedFrom?.id || fromName; // store id if known, else name
+    const toKey = resolvedTo?.id || toName;
+    const settlement = {
+      id: uid("set"),
+      fromId: fromKey,
+      toId: toKey,
+      amount,
+      createdAt: Date.now(),
+    };
+    const g = groups[idx];
+    const next = {
+      ...g,
+      settlements: [settlement, ...(g.settlements || [])],
+    };
+    const updated = [...groups];
+    updated[idx] = next;
+    saveLocal(GROUP_KEY, updated);
+    return true;
+  }
+
   async function simulatePay() {
     if (!amount || amount <= 0) {
       showToast("Invalid amount", "error");
@@ -123,16 +143,16 @@ export default function UpiPay() {
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
 
-    const recorded = recordSettlement();
-    if (recorded) {
+    const okGlobal = recordGlobalSettlement();
+    const okGroup = recordGroupSettlement();
+    if (okGlobal && okGroup) {
       showToast("Payment successful", "success");
-      // Return to source with paid flag and reminder id
       const url = new URL(returnTo, window.location.origin);
-      if (rid) {
-        url.searchParams.set("paid", "1");
-        url.searchParams.set("rid", rid);
-      }
+      if (groupId) url.searchParams.set("gid", groupId);
+      url.searchParams.set("paid", "1");
       setTimeout(() => navigate(url.pathname + url.search), 600);
+    } else {
+      showToast("Unable to record payment", "error");
     }
   }
 

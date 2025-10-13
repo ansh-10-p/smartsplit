@@ -1,147 +1,201 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import AnimatedGrid from "../components/AnimatedGrid";
-import { motion } from "framer-motion";
+// src/pages/LandingPage.jsx
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
-export default function Landing(){
-  const nav = useNavigate();
+const features = [
+  { icon: "⚡", title: "AI Expense Categorization", desc: "Automatically tags your expenses so you spend less time sorting and more time living." },
+  { icon: "🔔", title: "Fun & Friendly Reminders", desc: "Never miss a payment with gentle, timely nudges your friends will actually appreciate." },
+  { icon: "💸", title: "One‑Tap Pay Mock", desc: "Simplify settling up with a single tap — mock UPI payments to practice before real ones." },
+];
+
+const howItWorks = [
+  { step: "1", title: "Create a group", desc: "Add friends and set your default split preferences." },
+  { step: "2", title: "Add expenses", desc: "Scan receipts or use AI/voice to add in seconds." },
+  { step: "3", title: "Settle smart", desc: "Get minimal transactions and one‑tap Pay mocks." },
+];
+
+const faqs = [
+  { q: "Is this free?", a: "Yes, this demo is fully local and free to try." },
+  { q: "Does UPI really work?", a: "It’s a safe mock for demo; open your UPI app with a prefilled link." },
+  { q: "Will my data sync?", a: "This demo stores data locally. Export/import from Settings anytime." },
+];
+
+const testimonials = [
+  { name: "Raj Patel", text: "SmartSplit made managing our group trips effortless. Love the neon vibe too!" },
+  { name: "Sarah Williams", text: "Finally, an app that understands group expenses without the headache. Highly recommend!" },
+];
+
+function MoneyBagIcon({ isDark }) {
+  const fillColor = isDark ? "#8b5cf6" : "#0ea5e9";
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      <AnimatedGrid />
+    <svg className="w-64 h-64 hover:scale-110 transition-transform duration-500" viewBox="0 0 64 64" fill="none">
+      <path d="M32 2C26 2 22 6 22 12v2H18c-3 0-5 3-5 6v24c0 3 2 6 5 6h28c3 0 5-3 5-6V20c0-3-2-6-5-6h-4v-2c0-6-4-10-10-10z" fill={fillColor} stroke={fillColor} strokeWidth="2" />
+      <path d="M22 20h20v8H22v-8z" fill="#fff" opacity="0.2" />
+      <circle cx="32" cy="20" r="2" fill="#fff" />
+    </svg>
+  );
+}
 
-      <main className="flex items-center justify-center min-h-[80vh] px-6">
-        <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div>
-            <motion.h1 initial={{ x:-30, opacity:0 }} animate={{ x:0, opacity:1 }} transition={{duration:0.6}}
-                       className="text-5xl font-extrabold leading-tight bg-clip-text text-transparent neon-text"
-                       style={{backgroundImage: "linear-gradient(90deg,#7C3AED,#C084FC,#10B981)"}}>
-              Split Smart. <br/> Pay Easy.
-            </motion.h1>
+export default function LandingPage() {
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("darkMode");
+      if (saved !== null) return saved === "true";
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    return false;
+  });
 
-            <p className="mt-4 text-slate-300 max-w-lg">
-              SmartSplit helps groups manage shared expenses with AI categorization, fun reminders, and one-tap UPI mock pay — all in a neon, delightful UI.
+  useEffect(() => {
+    localStorage.setItem("darkMode", String(darkMode));
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  const gradients = {
+    dark: "from-purple-500 via-pink-500 to-indigo-500",
+    light: "from-teal-400 via-cyan-400 to-blue-500",
+  };
+
+  const textMuted = darkMode ? "text-slate-400" : "text-gray-600";
+  const cardBg =
+    "rounded-xl border transition-shadow duration-300 " +
+    (darkMode ? "bg-gray-900/70 border-gray-800 hover:shadow-purple-500/20" : "bg-white border-gray-200 hover:shadow-cyan-400/20");
+
+  return (
+    <div className={`${darkMode ? "bg-gray-950 text-slate-100" : "bg-white text-gray-900"} min-h-screen`}>
+      {/* Floating theme toggle (no navbar on landing) */}
+      <button
+        onClick={() => setDarkMode((s) => !s)}
+        aria-label="Toggle theme"
+        className={`fixed right-5 top-5 z-10 px-3 py-2 rounded-lg border ${darkMode ? "border-purple-500 hover:bg-gray-800" : "border-cyan-500 hover:bg-gray-100"}`}
+      >
+        {darkMode ? "🌞 Light" : "🌙 Dark"}
+      </button>
+
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${darkMode ? "from-purple-900/20 via-fuchsia-900/10 to-cyan-900/20" : "from-cyan-100 via-blue-50 to-emerald-100"}`} />
+        <div className="relative max-w-6xl mx-auto px-6 pt-28 pb-16 grid md:grid-cols-2 gap-12">
+          <div className="space-y-6">
+            <h1 className={`text-5xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r ${darkMode ? gradients.dark : gradients.light}`}>
+              Split Smart. Pay Easy.
+            </h1>
+            <p className={`${textMuted} text-lg max-w-lg`}>
+              Manage group expenses with AI categorization, playful reminders, and one‑tap mock payments. Neon‑nice, friction‑free.
             </p>
-
-            <div className="mt-8 flex gap-4">
-              <button onClick={() => nav('/signup')}
-                      className="px-6 py-3 rounded-xl btn-neon shadow-neon-lg hover:scale-105 transition transform tilt-on-cursor">
-                Start Splitting Now <span className="emoji-bounce">⚡</span>
-              </button>
-              <button onClick={() => nav('/login')}
-                      className="px-6 py-3 border border-slate-600 rounded-xl hover:bg-slate-800 transition tilt-on-cursor">
-                Login <span className="emoji-pulse">🔐</span>
-              </button>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                to="/signup"
+                className={`px-6 py-3 rounded-xl font-semibold shadow ${darkMode ? "bg-purple-500 hover:bg-purple-600 text-black" : "bg-cyan-500 hover:bg-cyan-600 text-white"}`}
+              >
+                Get Started
+              </Link>
+              <Link
+                to="/dashboard"
+                className={`px-6 py-3 rounded-xl border ${darkMode ? "border-slate-700 hover:bg-slate-800" : "border-cyan-500 hover:bg-cyan-50"}`}
+              >
+                Live Demo
+              </Link>
             </div>
-
-            <div className="mt-6 text-xs text-slate-500">Tip: Press <kbd className="px-2 py-1 rounded bg-slate-800">Ctrl/Cmd + K</kbd> to open commands</div>
+            <p className={`text-xs ${textMuted}`}>Tip: Press Ctrl/Cmd + K for quick commands.</p>
           </div>
-
-          <div className="relative">
-            <div className="glass p-4 rounded-2xl tilt-on-cursor">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-sm text-slate-300">Recent</div>
-                <div className="text-xs text-slate-500">AI Tagged</div>
-              </div>
-
-              <ul className="space-y-3">
-                <li className="p-3 bg-gradient-to-r from-[#07112a]/30 to-transparent rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-sm font-semibold">Dinner</div>
-                      <div className="text-xs text-slate-400">Paid by Raj — Food</div>
-                    </div>
-                    <div className="text-lg font-semibold">₹420</div>
-                  </div>
-                </li>
-                <li className="p-3 bg-gradient-to-r from-[#07112a]/30 to-transparent rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-sm font-semibold">Rent (Aug)</div>
-                      <div className="text-xs text-slate-400">Paid by Asha — Rent</div>
-                    </div>
-                    <div className="text-lg font-semibold">₹12,000</div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            <div className="absolute -right-10 -top-8 w-44 h-44 rounded-full bg-gradient-to-br from-[#7C3AED] to-[#10B981] opacity-30 blur-3xl animate-floaty"></div>
+          <div className="flex items-center justify-center">
+            <MoneyBagIcon isDark={darkMode} />
           </div>
         </div>
-      </main>
+      </section>
 
-      {/* Features */}
-      <section className="px-6 py-12">
-        <div className="max-w-6xl mx-auto grid gap-6 md:grid-cols-3">
-          {[{
-            t:"One-tap Splits", d:"Equal, percentage, or custom splits with instant previews", emoji:"⚡", anim:"emoji-bounce"
-          },{
-            t:"Smart Insights", d:"AI tags expenses and highlights what matters", emoji:"🤖", anim:"emoji-pulse"
-          },{
-            t:"Settle Up Fast", d:"Generate UPI deeplinks or share summaries", emoji:"💸", anim:"emoji-float"
-          }].map((f,i)=> (
-            <motion.div key={i} initial={{opacity:0, y:8}} whileInView={{opacity:1, y:0}} viewport={{once:true}} transition={{delay:i*0.05}}
-              className="glass p-5 rounded-xl matrix-rain">
-              <div className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
-                <span className={f.anim}>{f.emoji}</span>
-                {f.t}
-              </div>
-              <div className="text-slate-300 text-sm">{f.d}</div>
-            </motion.div>
+      {/* Feature cards */}
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        <h2 className="text-3xl font-bold mb-8 text-center">Why SmartSplit?</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {features.map((f) => (
+            <div key={f.title} className={`${cardBg} p-6`}>
+              <div className="text-4xl mb-3">{f.icon}</div>
+              <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
+              <p className={textMuted}>{f.desc}</p>
+            </div>
           ))}
         </div>
       </section>
 
       {/* How it works */}
-      <section className="px-6 pb-12">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
-          {[
-            { step:"1", title:"Add Expense", desc:"Enter amount, who paid, and participants", emoji:"📝", anim:"emoji-scale" },
-            { step:"2", title:"Choose Split", desc:"Equal/percentage/custom with rounding", emoji:"⚖️", anim:"emoji-rotate" },
-            { step:"3", title:"Settle Up", desc:"See who owes whom and pay instantly", emoji:"💰", anim:"emoji-glow" },
-          ].map((s,i)=> (
-            <motion.div key={i} initial={{opacity:0, y:8}} whileInView={{opacity:1, y:0}} viewport={{once:true}}
-              className="p-5 rounded-xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 tech-glitch">
-              <div className="text-3xl font-extrabold text-white flex items-center gap-2">
-                <span className={s.anim}>{s.emoji}</span>
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        <h2 className="text-3xl font-bold mb-8 text-center">How it works</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {howItWorks.map((s) => (
+            <div key={s.step} className={`${cardBg} p-6`}>
+              <div className={`w-8 h-8 rounded-full grid place-items-center font-bold mb-3 ${darkMode ? "bg-purple-600 text-black" : "bg-cyan-500 text-white"}`}>
                 {s.step}
               </div>
-              <div className="text-white font-semibold mt-2">{s.title}</div>
-              <div className="text-slate-300 text-sm">{s.desc}</div>
-            </motion.div>
+              <h4 className="font-semibold mb-1">{s.title}</h4>
+              <p className={textMuted}>{s.desc}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Social proof */}
-      <section className="px-6 pb-12">
-        <div className="max-w-5xl mx-auto grid gap-4">
-          <div className="text-center text-xl text-white font-semibold">Trusted by roommates, friends, and teams</div>
-          <div className="grid md:grid-cols-3 gap-4">
-            {["“Dead simple for rent splits”","“The meme reminders are hilarious”","“Finally no awkward nudges”"].map((q,i)=> (
-              <div key={i} className="glass p-4 rounded-xl text-slate-300 text-sm flex items-center gap-2">
-                <span className="emoji-shake">💬</span>
-                {q}
-              </div>
-            ))}
-          </div>
+      {/* Stats */}
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        <div className={`grid sm:grid-cols-3 gap-6 ${darkMode ? "" : ""}`}>
+          {[
+            { n: "5k+", t: "Groups managed" },
+            { n: "₹2Cr+", t: "Expenses tracked" },
+            { n: "98%", t: "Settle success (mock)" },
+          ].map((s) => (
+            <div key={s.t} className={`${cardBg} p-6 text-center`}>
+              <div className={`text-3xl font-extrabold ${darkMode ? "text-purple-300" : "text-cyan-600"}`}>{s.n}</div>
+              <div className={textMuted}>{s.t}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="max-w-4xl mx-auto px-6 py-12">
+        <h2 className="text-3xl font-bold mb-8 text-center">What users say</h2>
+        <div className="space-y-6">
+          {testimonials.map((t) => (
+            <blockquote key={t.name} className={`${cardBg} p-6 italic`}>
+              <p>“{t.text}”</p>
+              <footer className="mt-3 text-right not-italic font-semibold">— {t.name}</footer>
+            </blockquote>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="max-w-4xl mx-auto px-6 py-12">
+        <h2 className="text-3xl font-bold mb-8 text-center">FAQ</h2>
+        <div className="space-y-3">
+          {faqs.map((f) => (
+            <details key={f.q} className={`${cardBg} p-4`}>
+              <summary className="cursor-pointer font-medium">{f.q}</summary>
+              <p className={`${textMuted} mt-2`}>{f.a}</p>
+            </details>
+          ))}
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="px-6 pb-16">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="text-3xl md:text-4xl font-extrabold text-white">Make group money simple.</div>
-          <div className="text-slate-300 mt-2">Join SmartSplit and never argue about who owes what again.</div>
-          <div className="mt-6">
-            <button onClick={() => nav('/signup')} className="px-8 py-3 rounded-xl btn-neon text-black flex items-center gap-2 mx-auto">
-              Get Started <span className="emoji-spin">🚀</span>
-            </button>
+      <section className="max-w-6xl mx-auto px-6 pt-6 pb-14">
+        <div className={`${cardBg} p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4`}>
+          <div>
+            <h3 className="text-2xl font-bold">Ready to split smarter?</h3>
+            <p className={textMuted}>Start free — export/import anytime from Settings.</p>
+          </div>
+          <div className="flex gap-3">
+            <Link to="/signup" className={`px-6 py-3 rounded-xl font-semibold ${darkMode ? "bg-purple-500 hover:bg-purple-600 text-black" : "bg-cyan-500 hover:bg-cyan-600 text-white"}`}>
+              Create account
+            </Link>
+            <Link to="/reminders" className={`px-6 py-3 rounded-xl border ${darkMode ? "border-slate-700 hover:bg-slate-800" : "border-cyan-500 hover:bg-cyan-50"}`}>
+              Try reminders
+            </Link>
           </div>
         </div>
       </section>
 
-      <footer className="py-6 text-center text-slate-400">Built with ❤️ for Hackathon 2025</footer>
+      <footer className={`text-center text-sm py-8 ${textMuted}`}>© 2025 SmartSplit</footer>
     </div>
   );
 }
