@@ -150,8 +150,8 @@ VITE_FIREBASE_KEY=<your_key>
 
 ## 🧑💻 Author
 
-**Hojo**  
-✨ Passionate Full-Stack Developer | UI/UX Enthusiast | Tech Innovator  
+**Ansh Pandey**  
+✨ Passionate  Developer | UI/UX Enthusiast | Tech Innovator  
 📬 Connect: GitHub | LinkedIn
 
 ---
