@@ -1,11 +1,13 @@
 // src/pages/LandingPage.jsx
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import TestimonialsCarousel from "../components/TestimonialsCarousel";
+import { Lightning, Bell, CreditCard, Sun, Moon } from "phosphor-react";
 
 const features = [
-  { icon: "⚡", title: "AI Expense Categorization", desc: "Automatically tags your expenses so you spend less time sorting and more time living." },
-  { icon: "🔔", title: "Fun & Friendly Reminders", desc: "Never miss a payment with gentle, timely nudges your friends will actually appreciate." },
-  { icon: "💸", title: "One‑Tap Pay Mock", desc: "Simplify settling up with a single tap — mock UPI payments to practice before real ones." },
+  { icon: Lightning, title: "AI Expense Categorization", desc: "Automatically tags your expenses so you spend less time sorting and more time living." },
+  { icon: Bell, title: "Fun & Friendly Reminders", desc: "Never miss a payment with gentle, timely nudges your friends will actually appreciate." },
+  { icon: CreditCard, title: "One‑Tap Pay Mock", desc: "Simplify settling up with a single tap — mock UPI payments to practice before real ones." },
 ];
 
 const howItWorks = [
@@ -20,10 +22,6 @@ const faqs = [
   { q: "Will my data sync?", a: "This demo stores data locally. Export/import from Settings anytime." },
 ];
 
-const testimonials = [
-  { name: "Raj Patel", text: "SmartSplit made managing our group trips effortless. Love the neon vibe too!" },
-  { name: "Sarah Williams", text: "Finally, an app that understands group expenses without the headache. Highly recommend!" },
-];
 
 function MoneyBagIcon({ isDark }) {
   const fillColor = isDark ? "#8b5cf6" : "#0ea5e9";
@@ -75,35 +73,41 @@ export default function LandingPage() {
         aria-label="Toggle theme"
         className={`fixed right-5 top-5 z-10 px-3 py-2 rounded-lg ring-1 ${darkMode ? "ring-white/20 hover:bg-white/10" : "ring-black/10 hover:bg-black/5"}`}
       >
-        {darkMode ? "🌞 Light" : "🌙 Dark"}
+        {darkMode ? <><Sun className="w-4 h-4 mr-2" />Light</> : <><Moon className="w-4 h-4 mr-2" />Dark</>}
       </button>
 
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${darkMode ? "from-purple-900/10 via-fuchsia-900/5 to-cyan-900/10" : "from-cyan-100 via-blue-50 to-emerald-100"}`} />
         <div className="relative max-w-6xl mx-auto px-6 pt-28 pb-16 grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <h1 className={`text-5xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r ${darkMode ? gradients.dark : gradients.light}`}>
+          <div className="space-y-8">
+            <h1 className={`text-6xl md:text-7xl font-thin font-serif bg-clip-text text-transparent bg-gradient-to-r ${darkMode ? gradients.dark : gradients.light} leading-tight tracking-medium`}>
               Split Smart. Pay Easy.
             </h1>
-            <p className={`${textMuted} text-lg max-w-lg`}>
+            <p className={`${textMuted} text-lg max-w-lg leading-relaxed`}>
               Manage group expenses with AI categorization, playful reminders, and one‑tap mock payments. Neon‑nice, friction‑free.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 pt-2">
               <Link
                 to="/signup"
-                className="px-6 py-3 rounded-xl font-semibold shadow text-white bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:brightness-110"
+                className={`px-6 py-3 rounded-xl font-semibold shadow transition-all duration-200 ${darkMode
+                  ? "bg-purple-600 hover:bg-purple-500 text-white"
+                  : "bg-cyan-600 hover:bg-cyan-500 text-white"
+                  }`}
               >
                 Get Started
               </Link>
               <Link
                 to="/dashboard"
-                className={`px-6 py-3 rounded-xl ring-1 ${darkMode ? "ring-white/15 hover:bg-white/10" : "ring-black/10 hover:bg-white"}`}
+                className={`px-6 py-3 rounded-xl ring-1 transition-all duration-200 ${darkMode
+                  ? "ring-white/15 hover:bg-white/10 text-white"
+                  : "ring-gray-300 hover:bg-gray-50 text-gray-700"
+                  }`}
               >
                 Live Demo
               </Link>
             </div>
-            <p className={`text-xs ${textMuted}`}>Tip: Press Ctrl/Cmd + K for quick commands.</p>
+            <p className={`text-xs ${textMuted} pt-2`}>Tip: Press Ctrl/Cmd + K for quick commands.</p>
           </div>
           <div className="flex items-center justify-center">
             <MoneyBagIcon isDark={darkMode} />
@@ -112,89 +116,102 @@ export default function LandingPage() {
       </section>
 
       {/* Stats */}
-      <section className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid sm:grid-cols-3 gap-6">
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        <div className="grid sm:grid-cols-3 gap-8">
           {[
             { n: "5k+", t: "Groups managed" },
             { n: "₹2Cr+", t: "Expenses tracked" },
             { n: "98%", t: "Settle success (mock)" },
           ].map((s) => (
-            <div key={s.t} className={`${cardBg} p-6 text-center`}>
-              <div className={`text-3xl font-extrabold ${darkMode ? "text-purple-300" : "text-cyan-600"}`}>{s.n}</div>
-              <div className={textMuted}>{s.t}</div>
+            <div key={s.t} className={`${cardBg} p-8 text-center space-y-2`}>
+              <div className={`text-4xl font-extrabold ${darkMode
+                ? "bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent"
+                : "bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent"
+                }`}>{s.n}</div>
+              <div className={`${textMuted} text-lg`}>{s.t}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* Feature cards */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <h2 className="text-3xl font-bold mb-8 text-center">Why SmartSplit?</h2>
-        <div className="grid md:grid-cols-3 gap-6">
+      <section className="max-w-6xl mx-auto px-6 py-16">
+        <h2 className="text-4xl font-light font-serif mb-12 text-center tracking-wide">Why SmartSplit?</h2>
+        <div className="grid md:grid-cols-3 gap-8">
           {features.map((f) => (
-            <div key={f.title} className={`${cardBg} p-6`}>
-              <div className="text-4xl mb-3">{f.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
-              <p className={textMuted}>{f.desc}</p>
+            <div key={f.title} className={`${cardBg} p-8 space-y-4`}>
+              <div className="mb-4">
+                <f.icon className="w-12 h-12 text-purple-400" weight="fill" />
+              </div>
+              <h3 className="text-xl font-light mb-3 tracking-wide">{f.title}</h3>
+              <p className={`${textMuted} leading-relaxed`}>{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* How it works */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <h2 className="text-3xl font-bold mb-8 text-center">How it works</h2>
-        <div className="grid md:grid-cols-3 gap-6">
+      <section className="max-w-6xl mx-auto px-6 py-16">
+        <h2 className="text-4xl font-light font-serif mb-12 text-center tracking-wide">How it works</h2>
+        <div className="grid md:grid-cols-3 gap-8">
           {howItWorks.map((s) => (
-            <div key={s.step} className={`${cardBg} p-6`}>
-              <div className={`w-8 h-8 rounded-full grid place-items-center font-bold mb-3 ${darkMode ? "bg-purple-600 text-black" : "bg-cyan-500 text-white"}`}>
+            <div key={s.step} className={`${cardBg} p-8 space-y-4`}>
+              <div className={`w-10 h-10 rounded-full grid place-items-center font-bold text-lg ${darkMode
+                ? "bg-purple-600 text-white"
+                : "bg-cyan-600 text-white"
+                }`}>
                 {s.step}
               </div>
-              <h4 className="font-semibold mb-1">{s.title}</h4>
-              <p className={textMuted}>{s.desc}</p>
+              <h4 className="font-light text-lg mb-2 tracking-wide">{s.title}</h4>
+              <p className={`${textMuted} leading-relaxed`}>{s.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Testimonials */}
-      <section className="max-w-4xl mx-auto px-6 py-12">
-        <h2 className="text-3xl font-bold mb-8 text-center">What users say</h2>
-        <div className="space-y-6">
-          {testimonials.map((t) => (
-            <blockquote key={t.name} className={`${cardBg} p-6 italic`}>
-              <p>“{t.text}”</p>
-              <footer className="mt-3 text-right not-italic font-semibold">— {t.name}</footer>
-            </blockquote>
-          ))}
-        </div>
+      <section className="max-w-6xl mx-auto px-6 py-16">
+        <h2 className="text-4xl font-light font-serif mb-12 text-center tracking-wide">What users say</h2>
+        <TestimonialsCarousel darkMode={darkMode} />
       </section>
 
       {/* FAQ */}
-      <section className="max-w-4xl mx-auto px-6 py-12">
-        <h2 className="text-3xl font-bold mb-8 text-center">FAQ</h2>
-        <div className="space-y-3">
+      <section className="max-w-4xl mx-auto px-6 py-16">
+        <h2 className="text-4xl font-light font-serif mb-12 text-center tracking-wide">FAQ</h2>
+        <div className="space-y-4">
           {faqs.map((f) => (
-            <details key={f.q} className={`${cardBg} p-4`}>
-              <summary className="cursor-pointer font-medium">{f.q}</summary>
-              <p className={`${textMuted} mt-2`}>{f.a}</p>
+            <details key={f.q} className={`${cardBg} p-6`}>
+              <summary className="cursor-pointer font-light text-lg mb-2 tracking-wide">{f.q}</summary>
+              <p className={`${textMuted} mt-3 leading-relaxed`}>{f.a}</p>
             </details>
           ))}
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="max-w-6xl mx-auto px-6 pt-6 pb-14">
-        <div className={`${cardBg} p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4`}>
-          <div>
-            <h3 className="text-2xl font-bold">Ready to split smarter?</h3>
-            <p className={textMuted}>Start free — export/import anytime from Settings.</p>
+      <section className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+        <div className={`${cardBg} p-8 md:p-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6`}>
+          <div className="space-y-3">
+            <h3 className="text-3xl font-light font-serif tracking-wide">Ready to split smarter?</h3>
+            <p className={`${textMuted} text-lg`}>Start free — export/import anytime from Settings.</p>
           </div>
-          <div className="flex gap-3">
-            <Link to="/signup" className="px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:brightness-110">
+          <div className="flex gap-4">
+            <Link
+              to="/signup"
+              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${darkMode
+                ? "bg-purple-600 hover:bg-purple-500 text-white"
+                : "bg-cyan-600 hover:bg-cyan-500 text-white"
+                }`}
+            >
               Create account
             </Link>
-            <Link to="/reminders" className={`px-6 py-3 rounded-xl ring-1 ${darkMode ? "ring-white/15 hover:bg-white/10" : "ring-black/10 hover:bg-white"}`}>
+            <Link
+              to="/reminders"
+              className={`px-6 py-3 rounded-xl ring-1 transition-all duration-200 ${darkMode
+                ? "ring-white/15 hover:bg-white/10 text-white"
+                : "ring-gray-300 hover:bg-gray-50 text-gray-700"
+                }`}
+            >
               Try reminders
             </Link>
           </div>

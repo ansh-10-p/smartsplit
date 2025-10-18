@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../App";
 import { PlusCircle, X, Receipt, Bell, Users, ArrowRight } from "lucide-react";
+import { Lightning } from "phosphor-react";
 
 const EXP_KEY_V1 = "smartsplit_expenses_v1";
 
@@ -188,7 +189,7 @@ export default function Navbar() {
                       "conic-gradient(from 180deg at 50% 50%, #7C3AED, #C084FC, #22D3EE, #7C3AED)",
                   }}
                 >
-                  <span className="font-black text-white text-lg">⚡</span>
+                  <Lightning className="w-5 h-5 text-white" weight="fill" />
                   <span className="pointer-events-none absolute inset-0 opacity-30 blur-lg bg-white/10" />
                 </motion.div>
                 <div className="flex items-center gap-2">
@@ -249,7 +250,7 @@ export default function Navbar() {
               {/* Add -> opens Quick Add modal */}
               <button
                 onClick={() => setQuickAddOpen(true)}
-                className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:brightness-110 text-white px-3 py-2 rounded-lg transition shadow-sm"
+                className="hidden sm:flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg transition shadow-sm"
                 title="Quick Add"
               >
                 <PlusCircle size={18} /> <span className="font-medium">Add</span>
@@ -399,7 +400,7 @@ export default function Navbar() {
                   setMobileOpen(false);
                   setQuickAddOpen(true);
                 }}
-                className="px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white"
+                className="px-3 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white"
               >
                 Add
               </button>
@@ -552,7 +553,7 @@ export default function Navbar() {
                   <button
                     onClick={handleQuickAddExpense}
                     disabled={qaSaving}
-                    className="w-full px-3 py-2 rounded-md bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:brightness-110 disabled:opacity-60"
+                    className="w-full px-3 py-2 rounded-md bg-purple-600 hover:bg-purple-500 disabled:opacity-60"
                   >
                     {qaSaving ? "Saving…" : "Save Expense"}
                   </button>
@@ -615,8 +616,8 @@ export default function Navbar() {
               toast.type === "success"
                 ? "bg-green-600 text-white"
                 : toast.type === "error"
-                ? "bg-red-600 text-white"
-                : "bg-blue-600 text-white"
+                  ? "bg-red-600 text-white"
+                  : "bg-blue-600 text-white"
             )}
             onClick={() => setToast(null)}
             role="status"

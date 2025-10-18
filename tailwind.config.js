@@ -4,6 +4,10 @@ export default {
   content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        'serif': ['Instrument Serif', 'serif'],
+        'sans': ['Quicksand', 'sans-serif'],
+      },
       colors: {
         galactic: {
           900: "#050214",
@@ -34,4 +38,3 @@ export default {
   },
   plugins: []
 };
-  

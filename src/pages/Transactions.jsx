@@ -128,13 +128,13 @@ function useSpeechRecognition() {
     setListening(true);
     try {
       recogRef.current.start();
-    } catch {}
+    } catch { }
   };
   const stop = () => {
     if (!recogRef.current) return;
     try {
       recogRef.current.stop();
-    } catch {}
+    } catch { }
   };
 
   return { supported, listening, transcript, start, stop };
@@ -445,7 +445,7 @@ const Transactions = () => {
   return (
     <div className="min-h-screen px-6 pt-20 pb-10 bg-gradient-to-b from-gray-50 via-white to-gray-100 text-gray-900 dark:from-gray-900 dark:to-gray-800 dark:text-white transition-colors">
       <motion.h1
-        className="text-3xl font-bold mb-6 flex items-center gap-2"
+        className="text-4xl font-light font-serif mb-8 flex items-center gap-3 tracking-wide"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
       >
@@ -761,7 +761,7 @@ const SummaryCard = ({ title, value, color }) => {
       animate={{ opacity: 1, y: 0 }}
     >
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-2xl font-bold">{value}</p>
+      <p className="text-2xl font-light font-serif">{value}</p>
     </motion.div>
   );
 };

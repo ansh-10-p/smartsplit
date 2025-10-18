@@ -37,9 +37,8 @@ function Toast({ message, type = "info", onClose }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
-      className={`fixed bottom-6 right-6 px-4 py-2 rounded shadow-lg text-white z-50 max-w-xs ${
-        type === "error" ? "bg-red-500" : type === "success" ? "bg-green-500" : "bg-blue-500"
-      }`}
+      className={`fixed bottom-6 right-6 px-4 py-2 rounded shadow-lg text-white z-50 max-w-xs ${type === "error" ? "bg-red-500" : type === "success" ? "bg-green-500" : "bg-blue-500"
+        }`}
       onClick={onClose}
       style={{ cursor: "pointer" }}
     >
@@ -275,11 +274,11 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div>
               <motion.h1
-                className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-500 bg-clip-text text-transparent"
+                className="text-4xl md:text-5xl font-light font-serif mb-2 tracking-wide"
                 initial={{ y: -8, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
               >
-                Welcome back, {user?.username || "Friend"} 👋
+                Welcome back, {user?.username || "Friend"}
               </motion.h1>
               <p className="text-slate-600 dark:text-slate-400">Split smarter. Settle faster. Stay friends forever.</p>
             </div>
@@ -570,13 +569,12 @@ export default function Dashboard() {
                     return (
                       <li
                         key={p.id}
-                        className={`flex justify-between items-center px-4 py-2 rounded border ${
-                          bal > 0
+                        className={`flex justify-between items-center px-4 py-2 rounded border ${bal > 0
                             ? "bg-green-50 border-green-200 text-green-800 dark:bg-green-700/70 dark:border-green-700 dark:text-green-100"
                             : bal < 0
-                            ? "bg-red-50 border-red-200 text-red-800 dark:bg-red-700/70 dark:border-red-700 dark:text-red-100"
-                            : "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-700/70 dark:border-gray-700 dark:text-gray-100"
-                        }`}
+                              ? "bg-red-50 border-red-200 text-red-800 dark:bg-red-700/70 dark:border-red-700 dark:text-red-100"
+                              : "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-700/70 dark:border-gray-700 dark:text-gray-100"
+                          }`}
                       >
                         <span>{p.name}</span>
                         <span>₹{bal.toFixed(2)}</span>
@@ -675,7 +673,7 @@ export default function Dashboard() {
 
               <div className="mb-3">
                 <div className="text-sm text-slate-600 dark:text-slate-400">Amount</div>
-                <div className="text-2xl font-bold">₹{payModal.amount.toFixed(2)}</div>
+                <div className="text-2xl font-light font-serif">₹{payModal.amount.toFixed(2)}</div>
               </div>
 
               <div className="mb-4">

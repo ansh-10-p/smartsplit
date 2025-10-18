@@ -45,7 +45,7 @@ async function fetchRandomMemeUrl() {
     const r = await fetch("https://meme-api.com/gimme", { cache: "no-store" });
     const j = await r.json();
     if (j?.url) return j.url;
-  } catch {}
+  } catch { }
   try {
     const r2 = await fetch("https://api.imgflip.com/get_memes", { cache: "no-store" });
     const j2 = await r2.json();
@@ -53,7 +53,7 @@ async function fetchRandomMemeUrl() {
       const m = j2.data.memes[Math.floor(Math.random() * j2.data.memes.length)];
       return m.url;
     }
-  } catch {}
+  } catch { }
   return "https://i.imgflip.com/30b1gx.jpg";
 }
 
@@ -220,7 +220,7 @@ export default function Reminders() {
           n.onclick = () => {
             try {
               window.focus();
-            } catch {}
+            } catch { }
             window.open(payUrl, "_blank", "noopener,noreferrer");
             n.close();
           };
@@ -229,7 +229,7 @@ export default function Reminders() {
         else if (Notification.permission !== "denied")
           Notification.requestPermission().then((perm) => perm === "granted" && make());
       }
-    } catch {}
+    } catch { }
     if (!silent) showToast("Reminder sent (notification opens Pay Now)", "success");
   }
 
@@ -400,7 +400,7 @@ export default function Reminders() {
 
             <button
               onClick={createReminder}
-              className="ml-auto px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white hover:brightness-110"
+              className="ml-auto px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white"
             >
               Create Reminder
             </button>
@@ -447,23 +447,22 @@ export default function Reminders() {
                           </div>
                           <div className="mt-1">
                             <span
-                              className={`inline-block text-xs px-2 py-0.5 rounded ${
-                                r.status === "paid"
+                              className={`inline-block text-xs px-2 py-0.5 rounded ${r.status === "paid"
                                   ? "bg-green-100 text-green-800 dark:bg-green-600/30 dark:text-green-200"
                                   : r.status === "sent"
-                                  ? "bg-blue-100 text-blue-800 dark:bg-blue-600/30 dark:text-blue-200"
-                                  : overdue
-                                  ? "bg-red-100 text-red-800 dark:bg-red-600/30 dark:text-red-200"
-                                  : "bg-gray-200 text-gray-800 dark:bg-gray-600/30 dark:text-gray-200"
-                              }`}
+                                    ? "bg-blue-100 text-blue-800 dark:bg-blue-600/30 dark:text-blue-200"
+                                    : overdue
+                                      ? "bg-red-100 text-red-800 dark:bg-red-600/30 dark:text-red-200"
+                                      : "bg-gray-200 text-gray-800 dark:bg-gray-600/30 dark:text-gray-200"
+                                }`}
                             >
                               {r.status === "paid"
                                 ? "Paid"
                                 : r.status === "sent"
-                                ? "Sent"
-                                : overdue
-                                ? "Overdue"
-                                : "Pending"}
+                                  ? "Sent"
+                                  : overdue
+                                    ? "Overdue"
+                                    : "Pending"}
                             </span>
                           </div>
                         </div>
@@ -539,13 +538,12 @@ export default function Reminders() {
 
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 max-w-sm px-4 py-2 rounded shadow-md cursor-pointer z-50 ${
-            toast.type === "success"
+          className={`fixed bottom-6 right-6 max-w-sm px-4 py-2 rounded shadow-md cursor-pointer z-50 ${toast.type === "success"
               ? "bg-green-600 text-white"
               : toast.type === "error"
-              ? "bg-red-600 text-white"
-              : "bg-blue-600 text-white"
-          }`}
+                ? "bg-red-600 text-white"
+                : "bg-blue-600 text-white"
+            }`}
           onClick={() => setToast(null)}
         >
           {toast.text}

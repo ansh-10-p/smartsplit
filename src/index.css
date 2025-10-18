@@ -1,23 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-    /* Dark mode colors */
+  /* Dark mode colors */
   --gp-1: #7C3AED;
   --gp-2: #9333EA;
   --gp-3: #C084FC;
   --bg: #0A0028;
-    --text: #E0E7FF;
-    --btn-bg: linear-gradient(135deg, #7C3AED, #C084FC);
-    --btn-hover-shadow: rgba(124,58,237,0.18);
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
+  --text: #E0E7FF;
+  --btn-bg: linear-gradient(135deg, #7C3AED, #C084FC);
+  --btn-hover-shadow: rgba(124, 58, 237, 0.18);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 
-  body {
-  @apply bg-[var(--bg)] text-slate-100 antialiased overflow-x-hidden;
+body {
+  @apply bg-[var(--bg)] text-slate-100 antialiased overflow-x-hidden font-sans;
 }
 
 .gradient-glow {
@@ -27,8 +30,15 @@
 }
 
 @keyframes glow {
-  0%,100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .cursor-3d {
@@ -44,8 +54,8 @@
 }
 
 .bg-grid {
-  background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 
@@ -65,7 +75,7 @@
 }
 
 .btn-neon:hover {
-  box-shadow: 0 8px 40px rgba(124,58,237,0.18), 0 0 40px rgba(192,132,252,0.06);
+  box-shadow: 0 8px 40px rgba(124, 58, 237, 0.18), 0 0 40px rgba(192, 132, 252, 0.06);
   transform: translateY(-2px);
 }
 
@@ -76,49 +86,50 @@
 }
 
 .shadow-neon-lg {
-  box-shadow: 0 8px 40px rgba(124,58,237,0.18), 0 0 40px rgba(192,132,252,0.06);
+  box-shadow: 0 8px 40px rgba(124, 58, 237, 0.18), 0 0 40px rgba(192, 132, 252, 0.06);
 }
 
-  body {
-    @apply bg-[var(--bg)] text-[var(--text)] antialiased overflow-x-hidden;
-  }
-  
-  body.light {
-    /* Light mode colors */
-    --gp-1: #FF7E5F;        /* warm peach */
-    --gp-2: #FEB47B;        /* light orange */
-    --gp-3: #FFD194;        /* pale yellow */
-    --bg: #FDF6E3;          /* soft cream */
-    --text: #2C3E50;        /* dark slate */
-    --btn-bg: linear-gradient(135deg, #FF7E5F, #FEB47B, #FFD194);
-    --btn-hover-shadow: rgba(255,126,95,0.3);
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Use variables in your classes */
-  
-  .gradient-glow {
-    background: linear-gradient(135deg, var(--gp-1), var(--gp-2), var(--gp-3));
-    background-size: 400% 400%;
-    animation: glow 6s ease-in-out infinite;
-  }
-  
-  .btn-neon {
-    background: var(--btn-bg);
-    color: var(--text);
-    border: none;
-    transition: all 0.3s ease;
-  }
-  
-  .btn-neon:hover {
-    box-shadow: 0 8px 40px var(--btn-hover-shadow), 0 0 40px rgba(192,132,252,0.06);
-    transform: translateY(-2px);
-  }
-  
-  .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-  }
-  
+
+body.light {
+  /* Light mode colors */
+  --gp-1: #FF7E5F;
+  /* warm peach */
+  --gp-2: #FEB47B;
+  /* light orange */
+  --gp-3: #FFD194;
+  /* pale yellow */
+  --bg: #FDF6E3;
+  /* soft cream */
+  --text: #2C3E50;
+  /* dark slate */
+  --btn-bg: linear-gradient(135deg, #FF7E5F, #FEB47B, #FFD194);
+  --btn-hover-shadow: rgba(255, 126, 95, 0.3);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+}
+
+/* Use variables in your classes */
+
+.gradient-glow {
+  background: linear-gradient(135deg, var(--gp-1), var(--gp-2), var(--gp-3));
+  background-size: 400% 400%;
+  animation: glow 6s ease-in-out infinite;
+}
+
+.btn-neon {
+  background: var(--btn-bg);
+  color: var(--text);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-neon:hover {
+  box-shadow: 0 8px 40px var(--btn-hover-shadow), 0 0 40px rgba(192, 132, 252, 0.06);
+  transform: translateY(-2px);
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}

@@ -139,7 +139,7 @@ export default function UpiPay() {
   return (
     <div className="min-h-screen pt-20 pb-10 px-4 sm:px-6 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-800 text-white">
       <div className="max-w-lg mx-auto rounded-2xl border border-gray-800 bg-gray-900/80 p-6">
-        <h1 className="text-2xl font-bold">Pay via UPI</h1>
+        <h1 className="text-3xl font-light font-serif tracking-wide">Pay via UPI</h1>
         <p className="text-sm text-slate-400 mt-1">
           {fromName} paying {toName}
         </p>
@@ -147,7 +147,7 @@ export default function UpiPay() {
         <div className="mt-6 space-y-5">
           <div>
             <div className="text-xs text-slate-400">Amount</div>
-            <div className="text-3xl font-extrabold">₹{amount.toFixed(2)}</div>
+            <div className="text-3xl font-light font-serif">₹{amount.toFixed(2)}</div>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -205,13 +205,12 @@ export default function UpiPay() {
 
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 max-w-sm px-4 py-2 rounded shadow-md cursor-pointer z-50 ${
-            toast.type === "success"
+          className={`fixed bottom-6 right-6 max-w-sm px-4 py-2 rounded shadow-md cursor-pointer z-50 ${toast.type === "success"
               ? "bg-green-600 text-white"
               : toast.type === "error"
-              ? "bg-red-600 text-white"
-              : "bg-blue-600 text-white"
-          }`}
+                ? "bg-red-600 text-white"
+                : "bg-blue-600 text-white"
+            }`}
           onClick={() => setToast(null)}
         >
           {toast.text}

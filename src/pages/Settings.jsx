@@ -289,7 +289,7 @@ export default function Settings() {
     <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 bg-gradient-to-b from-gray-50 via-white to-gray-100 text-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-white transition-colors">
       <div className="max-w-5xl mx-auto space-y-8">
         <header className="flex items-center justify-between">
-          <h1 className="text-2xl sm:text-3xl font-extrabold">Settings</h1>
+          <h1 className="text-3xl sm:text-4xl font-light font-serif tracking-wide">Settings</h1>
           <button
             onClick={() => setSettings(DEFAULT_SETTINGS)}
             className="px-3 py-1.5 rounded-md ring-1 ring-black/10 bg-white hover:bg-gray-50 text-gray-900 flex items-center gap-2 text-sm dark:bg-gray-800 dark:ring-white/10 dark:text-white dark:hover:bg-gray-700"
@@ -595,7 +595,7 @@ function Section({ title, icon, children }) {
     <section className="rounded-2xl ring-1 ring-black/10 bg-white p-5 dark:ring-white/10 dark:bg-gray-900/70">
       <div className="flex items-center gap-2 mb-3">
         {icon}
-        <h2 className="text-lg font-semibold text-slate-800 dark:text-white">{title}</h2>
+        <h2 className="text-lg font-light font-serif text-slate-800 dark:text-white tracking-wide">{title}</h2>
       </div>
       {children}
     </section>

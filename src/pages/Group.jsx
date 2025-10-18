@@ -311,23 +311,23 @@ export default function Group() {
       const updated = prev.map((g) =>
         `${g.id}` === `${groupId}`
           ? {
-              ...g,
-              expenses: [
-                {
-                  id: uid("exp"),
-                  title: payload.title,
-                  amount: Number(payload.amount),
-                  payerId: payload.payerId,
-                  splitType: payload.splitType,
-                  customSplits: payload.customSplits,
-                  percentageSplits: payload.percentageSplits,
-                  shares: payload.shares,
-                  receiptUrl: payload.receiptUrl || "",
-                  createdAt: Date.now(),
-                },
-                ...g.expenses,
-              ],
-            }
+            ...g,
+            expenses: [
+              {
+                id: uid("exp"),
+                title: payload.title,
+                amount: Number(payload.amount),
+                payerId: payload.payerId,
+                splitType: payload.splitType,
+                customSplits: payload.customSplits,
+                percentageSplits: payload.percentageSplits,
+                shares: payload.shares,
+                receiptUrl: payload.receiptUrl || "",
+                createdAt: Date.now(),
+              },
+              ...g.expenses,
+            ],
+          }
           : g
       );
       const sel = updated.find((gg) => `${gg.id}` === `${groupId}`);
@@ -342,18 +342,18 @@ export default function Group() {
       const updated = prev.map((g) =>
         `${g.id}` === `${groupId}`
           ? {
-              ...g,
-              settlements: [
-                {
-                  id: uid("set"),
-                  fromId: fromKey,
-                  toId: toKey,
-                  amount: Number(amount),
-                  createdAt: Date.now(),
-                },
-                ...g.settlements,
-              ],
-            }
+            ...g,
+            settlements: [
+              {
+                id: uid("set"),
+                fromId: fromKey,
+                toId: toKey,
+                amount: Number(amount),
+                createdAt: Date.now(),
+              },
+              ...g.settlements,
+            ],
+          }
           : g
       );
       const sel = updated.find((gg) => `${gg.id}` === `${groupId}`);
@@ -401,18 +401,18 @@ export default function Group() {
       const updated = prev.map((g) =>
         `${g.id}` === `${group.id}`
           ? {
-              ...g,
-              settlements: [
-                ...suggestions.map((s) => ({
-                  id: uid("set"),
-                  fromId: s.from,
-                  toId: s.to,
-                  amount: s.amount,
-                  createdAt: Date.now(),
-                })),
-                ...g.settlements,
-              ],
-            }
+            ...g,
+            settlements: [
+              ...suggestions.map((s) => ({
+                id: uid("set"),
+                fromId: s.from,
+                toId: s.to,
+                amount: s.amount,
+                createdAt: Date.now(),
+              })),
+              ...g.settlements,
+            ],
+          }
           : g
       );
       const sel = updated.find((gg) => `${gg.id}` === `${group.id}`);
@@ -444,7 +444,7 @@ export default function Group() {
       {!selectedGroup && (
         <>
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold flex items-center gap-2">
+            <h1 className="text-3xl font-light font-serif flex items-center gap-3 tracking-wide">
               <Users /> Groups
             </h1>
             <div className="flex items-center gap-2">
@@ -493,7 +493,7 @@ export default function Group() {
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
+              <h2 className="text-2xl font-light font-serif mb-2 flex items-center gap-3 tracking-wide">
                 <Wallet /> {selectedGroup.name}
               </h2>
               <div className="text-slate-700 dark:text-slate-400">
@@ -641,20 +641,19 @@ export default function Group() {
                 return Object.entries(bal).map(([m, val]) => (
                   <div
                     key={m}
-                    className={`p-3 rounded-lg mb-2 border ${
-                      val > 0
+                    className={`p-3 rounded-lg mb-2 border ${val > 0
                         ? "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/40 dark:border-green-700 dark:text-green-300"
                         : val < 0
-                        ? "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/40 dark:border-red-700 dark:text-red-300"
-                        : "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900/60 dark:border-gray-800 dark:text-slate-300"
-                    }`}
+                          ? "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/40 dark:border-red-700 dark:text-red-300"
+                          : "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900/60 dark:border-gray-800 dark:text-slate-300"
+                      }`}
                   >
                     {displayName(m)}:{" "}
                     {val > 0
                       ? `Gets ₹${val.toFixed(2)}`
                       : val < 0
-                      ? `Owes ₹${(-val).toFixed(2)}`
-                      : "Settled"}
+                        ? `Owes ₹${(-val).toFixed(2)}`
+                        : "Settled"}
                   </div>
                 ));
               })()}
@@ -753,13 +752,12 @@ export default function Group() {
 
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 max-w-sm px-4 py-2 rounded shadow-md cursor-pointer z-[60] ${
-            toast.type === "success"
+          className={`fixed bottom-6 right-6 max-w-sm px-4 py-2 rounded shadow-md cursor-pointer z-[60] ${toast.type === "success"
               ? "bg-green-600 text-white"
               : toast.type === "error"
-              ? "bg-red-600 text-white"
-              : "bg-blue-600 text-white"
-          }`}
+                ? "bg-red-600 text-white"
+                : "bg-blue-600 text-white"
+            }`}
           onClick={() => setToast(null)}
         >
           {toast.text}
@@ -866,11 +864,10 @@ function AddGroupForm({ onCreate, participants, addParticipantByName }) {
           <button
             key={p.id}
             onClick={() => toggleMember(p.id)}
-            className={`px-3 py-1 rounded-md border text-left ${
-              selected.includes(p.id)
+            className={`px-3 py-1 rounded-md border text-left ${selected.includes(p.id)
                 ? "bg-blue-600 border-blue-500 text-white"
                 : "bg-white border-gray-300 dark:bg-gray-800 dark:border-gray-700"
-            }`}
+              }`}
           >
             {p.name}
           </button>
