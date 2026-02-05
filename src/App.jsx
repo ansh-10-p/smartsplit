@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 
 // Pages
 import Landing from "./pages/Landing";
@@ -71,58 +72,66 @@ export default function App() {
         {!hideNavbar && <Navbar />}
 
         <div className={hideNavbar ? "" : "pt-20"}>
-          <Routes>
-            {/* Settings / Reminders / UPI */}
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/reminders" element={<Reminders />} />
-            <Route path="/upi" element={<UpiPay />} />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+            >
+              <Routes location={location}>
+                {/* Settings / Reminders / UPI */}
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/reminders" element={<Reminders />} />
+                <Route path="/upi" element={<UpiPay />} />
 
-            {/* Public */}
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+                {/* Public */}
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
 
-            {/* Protected */}
-            <Route
-              path="/dashboard"
-              element={<PrivateRoute element={<Dashboard />} />}
-            />
-            <Route
-              path="/summary"
-              element={<PrivateRoute element={<Summary />} />}
-            />
-            <Route
-              path="/transactions"
-              element={<PrivateRoute element={<Transactions />} />}
-            />
-            <Route
-              path="/groups"
-              element={<PrivateRoute element={<Group />} />}
-            />
-            <Route
-              path="/ai-chat"
-              element={<PrivateRoute element={<AIChat />} />}
-            />
-            <Route
-              path="/analytics"
-              element={<PrivateRoute element={<Analytics />} />}
-            />
-            <Route
-              path="/profile"
-              element={<PrivateRoute element={<Profile />} />}
-            />
-            <Route
-              path="/notifications"
-              element={<PrivateRoute element={<Notifications />} />}
-            />
-            <Route
-              path="/budget"
-              element={<PrivateRoute element={<Budget />} />}
-            />
-            <Route path="/help" element={<Help />} />
-
-            {/* (If you had a duplicate /upi route below, it’s safe to keep just one) */}
-          </Routes>
+                {/* Protected */}
+                <Route
+                  path="/dashboard"
+                  element={<PrivateRoute element={<Dashboard />} />}
+                />
+                <Route
+                  path="/summary"
+                  element={<PrivateRoute element={<Summary />} />}
+                />
+                <Route
+                  path="/transactions"
+                  element={<PrivateRoute element={<Transactions />} />}
+                />
+                <Route
+                  path="/groups"
+                  element={<PrivateRoute element={<Group />} />}
+                />
+                <Route
+                  path="/ai-chat"
+                  element={<PrivateRoute element={<AIChat />} />}
+                />
+                <Route
+                  path="/analytics"
+                  element={<PrivateRoute element={<Analytics />} />}
+                />
+                <Route
+                  path="/profile"
+                  element={<PrivateRoute element={<Profile />} />}
+                />
+                <Route
+                  path="/notifications"
+                  element={<PrivateRoute element={<Notifications />} />}
+                />
+                <Route
+                  path="/budget"
+                  element={<PrivateRoute element={<Budget />} />}
+                />
+                <Route path="/help" element={<Help />} />
+              </Routes>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </AuthContext.Provider>
