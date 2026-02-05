@@ -13,6 +13,11 @@ import Group from "./pages/Group";
 import Reminders from "./pages/Reminders";
 import Settings from "./pages/Settings";
 import AIChat from "./pages/AIChat";
+import Analytics from "./pages/Analytics";
+import Profile from "./pages/Profile";
+import Notifications from "./pages/Notifications";
+import Help from "./pages/Help";
+import Budget from "./pages/Budget";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -98,6 +103,23 @@ export default function App() {
               path="/ai-chat"
               element={<PrivateRoute element={<AIChat />} />}
             />
+            <Route
+              path="/analytics"
+              element={<PrivateRoute element={<Analytics />} />}
+            />
+            <Route
+              path="/profile"
+              element={<PrivateRoute element={<Profile />} />}
+            />
+            <Route
+              path="/notifications"
+              element={<PrivateRoute element={<Notifications />} />}
+            />
+            <Route
+              path="/budget"
+              element={<PrivateRoute element={<Budget />} />}
+            />
+            <Route path="/help" element={<Help />} />
 
             {/* (If you had a duplicate /upi route below, it’s safe to keep just one) */}
           </Routes>
