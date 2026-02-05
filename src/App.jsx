@@ -12,6 +12,7 @@ import Transactions from "./pages/Transactions";
 import Group from "./pages/Group";
 import Reminders from "./pages/Reminders";
 import Settings from "./pages/Settings";
+import AIChat from "./pages/AIChat";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -22,8 +23,8 @@ import AnimatedGrid from "./components/AnimatedGrid";
 // Context
 export const AuthContext = React.createContext({
   user: null,
-  login: () => {},
-  logout: () => {},
+  login: () => { },
+  logout: () => { },
 });
 
 export default function App() {
@@ -92,6 +93,10 @@ export default function App() {
             <Route
               path="/groups"
               element={<PrivateRoute element={<Group />} />}
+            />
+            <Route
+              path="/ai-chat"
+              element={<PrivateRoute element={<AIChat />} />}
             />
 
             {/* (If you had a duplicate /upi route below, it’s safe to keep just one) */}

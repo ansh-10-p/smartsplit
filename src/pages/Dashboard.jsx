@@ -1,4 +1,3 @@
-// src/pages/Dashboard.jsx
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../App";
 import { Link } from "react-router-dom";
@@ -9,11 +8,51 @@ import {
   TrendingUp,
   Divide,
   X,
-  Trash2,
   CreditCard,
   Loader2,
   ArrowRightCircle,
+  Plus,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Users
 } from "lucide-react";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const EXP_KEY = "smartsplit_expenses_v1";
 const PART_KEY = "smartsplit_participants_v1";
@@ -64,14 +103,19 @@ export default function Dashboard() {
     return JSON.parse(localStorage.getItem(EXP_KEY) || "[]");
   });
 
-  // Only group-style expenses (protects from Quick Add/Transactions records)
   const groupExpenses = useMemo(() => expenses.filter(isGroupExpense), [expenses]);
 
   // form/ui state
-  const [showForm, setShowForm] = useState(false);
+  const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
-  const [paidBy, setPaidBy] = useState(participants[0]?.id || "");
+  const [paidBy, setPaidBy] = useState("");
+  useEffect(() => {
+    if (participants.length > 0 && !paidBy) {
+      setPaidBy(participants[0].id);
+    }
+  }, [participants, paidBy]);
+
   const [splitType, setSplitType] = useState("equal");
   const [alloc, setAlloc] = useState({});
 
@@ -175,7 +219,7 @@ export default function Dashboard() {
     setAmount("");
     setAlloc({});
     setSplitType("equal");
-    setShowForm(false);
+    setIsAddExpenseOpen(false);
     showToast(`Added expense "${title}"`, "success");
   };
 
@@ -266,466 +310,386 @@ export default function Dashboard() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200 text-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-white p-6 transition-colors">
-      <div className="max-w-7xl mx-auto">
-        <main>
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-            <div>
-              <motion.h1
-                className="text-4xl md:text-5xl font-light font-serif mb-2 tracking-wide"
-                initial={{ y: -8, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-              >
-                Welcome back, {user?.username || "Friend"}
-              </motion.h1>
-              <p className="text-slate-600 dark:text-slate-400">Split smarter. Settle faster. Stay friends forever.</p>
-            </div>
+  const totalExpenseAmount = groupExpenses.reduce((acc, ex) => acc + (Number(ex.amount) || 0), 0);
 
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-md bg-white border border-gray-200 dark:bg-gray-900/60 dark:border-gray-800">
-                <div className="text-xs text-slate-600 dark:text-slate-400">Your Balance</div>
-                <div className="font-semibold">
-                  ₹{Object.values(balances).reduce((s, v) => s + v, 0).toFixed(2)}
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  const name = prompt("Enter participant name:");
-                  if (name) addParticipant(name);
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg border border-gray-300 transition dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white dark:border-gray-600"
-              >
-                <UserPlus size={16} /> Add
-              </button>
-            </div>
+  return (
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-foreground transition-colors pb-20">
+        {/* Hero Header */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white py-16 sm:py-24 mb-12">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-purple-500/10 to-transparent" />
+          <div className="relative max-w-7xl mx-auto px-6">
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-4"
+            >
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-cyan-200">
+                Dashboard
+              </h1>
+              <p className="text-lg md:text-xl text-slate-300 max-w-2xl font-light">
+                Welcome back, <span className="font-semibold text-white">{user?.username || "Friend"}</span>. Track expenses, settle up with friends, and keep your finances organized.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 -mt-16 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            {/* Summary Cards with improved design */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <Card className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Total Expenses</CardTitle>
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                    <Wallet className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold tracking-tight">₹{totalExpenseAmount.toFixed(2)}</div>
+                  <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
+                    <TrendingUp className="h-3 w-3" />
+                    Across {groupExpenses.length} transactions
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <Card className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Active Participants</CardTitle>
+                  <div className="p-2 bg-cyan-100 dark:bg-cyan-900/30 rounded-lg">
+                    <Users className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold tracking-tight">{participants.length}</div>
+                  <p className="text-sm text-muted-foreground mt-2">Friends in your group</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+              <Card className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Pending Settlements</CardTitle>
+                  <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                    <ArrowRightCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold tracking-tight">{settlements.length}</div>
+                  <p className="text-sm text-muted-foreground mt-2">Transactions to settle</p>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
 
-          <div className="space-y-6">
-            {/* Top cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-xl p-4 bg-white border border-gray-200 shadow dark:bg-gray-900/80 dark:border-gray-800">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 font-semibold">
-                    <Wallet className="text-cyan-600 dark:text-cyan-400" /> Expenses
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">{groupExpenses.length} items</div>
-                </div>
-                <div className="text-sm text-slate-700 dark:text-slate-300">Quick actions</div>
-                <div className="mt-3 flex gap-2">
-                  <button
-                    onClick={() => setShowForm((s) => !s)}
-                    className="px-3 py-2 rounded-md bg-cyan-600 text-white font-semibold hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600"
-                  >
-                    {showForm ? "Close" : "Add Expense"}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setParticipants([
-                        { id: "p1", name: "Raj", points: 120 },
-                        { id: "p2", name: "Sarah", points: 90 },
-                        { id: "p3", name: "Asha", points: 70 },
-                      ]);
-                      setExpenses([]);
-                      showToast("Reset demo data", "info");
-                    }}
-                    className="px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-700 dark:text-white"
-                  >
-                    Reset
-                  </button>
-                </div>
-              </div>
+          <div className="mt-8 flex flex-col md:flex-row gap-8">
+            {/* Main Content Area */}
+            <div className="flex-1 space-y-8">
 
-              <div className="rounded-xl p-4 bg-white border border-gray-200 shadow dark:bg-gray-900/80 dark:border-gray-800">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 font-semibold">
-                    <TrendingUp className="text-cyan-600 dark:text-cyan-400" /> Balances
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Live</div>
-                </div>
-                <div className="text-sm text-slate-700 dark:text-slate-300">
-                  Quick glance of who owes and who is owed.
-                </div>
-                <div className="mt-3 flex flex-col gap-2">
-                  {participants.slice(0, 3).map((p) => (
-                    <div key={p.id} className="flex justify-between">
-                      <div className="text-sm">{p.name}</div>
-                      <div className="font-semibold">₹{(balances[p.id] ?? 0).toFixed(2)}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-xl p-4 bg-white border border-gray-200 shadow dark:bg-gray-900/80 dark:border-gray-800">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 font-semibold">
-                    <Divide className="text-cyan-600 dark:text-cyan-400" /> Settlements
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">{settlements.length}</div>
-                </div>
-                <div className="text-sm text-slate-700 dark:text-slate-300">Pay or request to settle balances.</div>
-
-                <div className="mt-3">
-                  {settlements.slice(0, 3).map((s, i) => (
-                    <div key={i} className="flex items-center justify-between gap-2 mb-2">
-                      <div className="text-sm">
-                        {participantMap[s.from]?.name || s.from} → {participantMap[s.to]?.name || s.to}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="font-semibold">₹{s.amount.toFixed(2)}</div>
-                        <button
-                          onClick={() => openPayModal(s.from, s.to, s.amount)}
-                          className="px-2 py-1 rounded-md bg-cyan-600 text-white hover:bg-cyan-700 flex items-center gap-2 dark:bg-cyan-500 dark:hover:bg-cyan-600"
-                        >
-                          <CreditCard size={14} /> Pay
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Add Expense Form (animated) */}
-            <AnimatePresence>
-              {showForm && (
-                <motion.div
-                  initial={{ opacity: 0, y: -12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  className="p-6 rounded-2xl bg-white border border-gray-200 shadow-xl mb-4 dark:bg-gray-900/70 dark:border-gray-700"
-                >
-                  <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <Wallet className="text-cyan-600 dark:text-cyan-400" /> New Expense
-                  </h2>
-
-                  <div className="grid md:grid-cols-3 gap-4 mb-4">
-                    <input
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="Expense Title"
-                      className="p-3 rounded-md bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 dark:bg-gray-950 dark:border-gray-700"
-                    />
-                    <input
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      placeholder="Amount (₹)"
-                      type="number"
-                      min="0"
-                      className="p-3 rounded-md bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 dark:bg-gray-950 dark:border-gray-700"
-                    />
-                    <select
-                      value={paidBy}
-                      onChange={(e) => setPaidBy(e.target.value)}
-                      className="p-3 rounded-md bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 dark:bg-gray-950 dark:border-gray-700"
-                    >
-                      {participants.map((p) => (
-                        <option value={p.id} key={p.id}>
-                          {p.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="mb-4 flex items-center gap-3 flex-wrap">
-                    <label className="text-sm text-slate-700 dark:text-slate-300">Split Type:</label>
-                    <select
-                      value={splitType}
-                      onChange={(e) => setSplitType(e.target.value)}
-                      className="p-2 rounded-md bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 dark:bg-gray-950 dark:border-gray-700"
-                    >
-                      <option value="equal">Equal</option>
-                      <option value="percentage">Percentage</option>
-                      <option value="custom">Custom</option>
-                    </select>
-                  </div>
-
-                  {(splitType === "percentage" || splitType === "custom") && (
-                    <div className="grid md:grid-cols-3 gap-3 mb-4">
-                      {participants.map((p) => (
-                        <div key={p.id} className="flex items-center gap-3">
-                          <div className="w-24 text-sm">{p.name}</div>
-                          <input
-                            value={alloc[p.id] ?? ""}
-                            onChange={(e) =>
-                              setAlloc((a) => ({
-                                ...a,
-                                [p.id]: Number(e.target.value),
-                              }))
-                            }
-                            placeholder={splitType === "percentage" ? "%" : "₹"}
-                            type="number"
-                            min="0"
-                            className="flex-1 p-2 rounded-md bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 dark:bg-gray-950 dark:border-gray-700"
+              {/* Actions Bar */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-semibold tracking-tight">Recent Activity</h2>
+                <div className="flex gap-2">
+                  <Dialog open={isAddExpenseOpen} onOpenChange={setIsAddExpenseOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="shadow-lg shadow-indigo-500/20">
+                        <Plus className="mr-2 h-4 w-4" /> Add Expense
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Add Expense</DialogTitle>
+                        <DialogDescription>
+                          Add a new shared expense to the group.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="title" className="text-right">
+                            Title
+                          </Label>
+                          <Input
+                            id="title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Dinner, Taxi, etc."
+                            className="col-span-3"
                           />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="amount" className="text-right">
+                            Amount
+                          </Label>
+                          <Input
+                            id="amount"
+                            type="number"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            placeholder="0.00"
+                            className="col-span-3"
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="paidBy" className="text-right">
+                            Paid By
+                          </Label>
+                          <Select value={paidBy} onValueChange={setPaidBy}>
+                            <SelectTrigger className="col-span-3">
+                              <SelectValue placeholder="Select who paid" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {participants.map((p) => (
+                                <SelectItem key={p.id} value={p.id}>
+                                  {p.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="splitType" className="text-right">
+                            Split
+                          </Label>
+                          <Select value={splitType} onValueChange={setSplitType}>
+                            <SelectTrigger className="col-span-3">
+                              <SelectValue placeholder="Select split type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="equal">Equal</SelectItem>
+                              <SelectItem value="percentage">Percentage</SelectItem>
+                              <SelectItem value="custom">Custom Amount</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {(splitType === "percentage" || splitType === "custom") && (
+                          <div className="col-span-4 grid gap-2">
+                            <Label className="mb-2">Allocations</Label>
+                            {participants.map((p) => (
+                              <div key={p.id} className="grid grid-cols-4 items-center gap-4">
+                                <Label className="text-right text-xs text-muted-foreground">{p.name}</Label>
+                                <Input
+                                  className="col-span-3 h-8"
+                                  type="number"
+                                  placeholder={splitType === "percentage" ? "%" : "₹"}
+                                  value={alloc[p.id] ?? ""}
+                                  onChange={(e) => setAlloc((a) => ({ ...a, [p.id]: Number(e.target.value) }))}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                      </div>
+                      <DialogFooter>
+                        <Button onClick={addExpense}>Save Expense</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+
+              {/* Expenses List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Expenses</CardTitle>
+                  <CardDescription>Recent transactions from your group.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {groupExpenses.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+                      <div className="rounded-full bg-slate-100 p-3 mb-3 dark:bg-slate-800">
+                        <Wallet className="h-6 w-6 opacity-50" />
+                      </div>
+                      <p>No expenses yet.</p>
+                      <Button variant="link" onClick={() => setIsAddExpenseOpen(true)}>Add your first expense</Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {groupExpenses.map((ex) => (
+                        <div key={ex.id} className="flex items-start justify-between p-4 border rounded-lg bg-card hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                          <div className="flex gap-4">
+                            <div className="mt-1 bg-primary/10 p-2 rounded-full hidden sm:block">
+                              <ArrowUpRight className="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium leading-none">{ex.title}</p>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                Paid by <span className="font-medium text-foreground">{participantMap[ex.paidBy]?.name}</span>
+                              </p>
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {ex.splits?.map(split => (
+                                  <Badge key={split.participantId} variant="secondary" className="text-[10px] font-normal">
+                                    {participantMap[split.participantId]?.name}: {Number(split.value).toFixed(0)}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <span className="font-bold">₹{Number(ex.amount).toFixed(2)}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 text-red-500 hover:text-red-600 hover:bg-red-50"
+                              onClick={() => deleteExpense(ex.id)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
                   )}
+                </CardContent>
+              </Card>
 
-                  <button
-                    onClick={addExpense}
-                    className="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-semibold transition dark:bg-cyan-500 dark:hover:bg-cyan-600"
-                  >
-                    Add Expense
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Participants + Expenses lists */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Participants */}
-              <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-lg dark:bg-gray-900/80 dark:border-gray-800">
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <UserPlus className="text-cyan-600 dark:text-cyan-400" /> Participants
-                </h3>
-                {participants.length === 0 ? (
-                  <p className="text-gray-500 italic dark:text-gray-400">No participants added yet.</p>
-                ) : (
-                  <ul className="grid sm:grid-cols-2 gap-3">
-                    {participants.map((p) => (
-                      <li
-                        key={p.id}
-                        className="flex justify-between items-center bg-gray-50 border border-gray-200 rounded-md p-3 dark:bg-gray-950 dark:border-gray-800"
-                      >
-                        <span>{p.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">
-                            ₹{(balances[p.id] ?? 0).toFixed(2)}
-                          </span>
-                          <button
-                            onClick={() => deleteParticipant(p.id)}
-                            className="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400"
-                            title="Delete Participant"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
-
-              {/* Expenses */}
-              <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-lg dark:bg-gray-900/80 dark:border-gray-800">
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <Wallet className="text-cyan-600 dark:text-cyan-400" /> Expenses
-                </h3>
-                {groupExpenses.length === 0 ? (
-                  <p className="text-gray-500 italic dark:text-gray-400">No expenses recorded yet.</p>
-                ) : (
-                  <ul className="space-y-3 max-h-96 overflow-auto pr-2">
-                    {groupExpenses.map((ex) => (
-                      <li
-                        key={ex.id}
-                        className="bg-gray-50 border border-gray-200 rounded-md p-4 flex flex-col md:flex-row md:justify-between md:items-center dark:bg-gray-950 dark:border-gray-800"
-                      >
-                        <div>
-                          <div className="text-lg font-semibold">{ex.title}</div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
-                            Paid by: {participantMap[ex.paidBy]?.name || "Unknown"} | ₹{Number(ex.amount).toFixed(2)}
-                          </div>
-                          <div className="text-sm mt-2 flex flex-wrap gap-2">
-                            {(ex.splits || []).map((sp) => (
-                              <span
-                                key={sp.participantId}
-                                className="px-2 py-1 rounded bg-cyan-100 text-cyan-800 text-xs dark:bg-cyan-700/50 dark:text-cyan-100"
-                              >
-                                {participantMap[sp.participantId]?.name || "?"}: ₹
-                                {Number(sp.value ?? 0).toFixed(2)}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="mt-3 md:mt-0 flex gap-3">
-                          <button
-                            onClick={() => deleteExpense(ex.id)}
-                            className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md transition"
-                            title="Delete Expense"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
             </div>
 
-            {/* Balance Summary + Full Settlements */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-lg dark:bg-gray-900/80 dark:border-gray-800">
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <TrendingUp className="text-cyan-600 dark:text-cyan-400" /> Balance Summary
-                </h3>
-                <ul className="space-y-2">
+            {/* Sidebar */}
+            <div className="w-full md:w-80 space-y-8">
+
+              {/* Balances */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" /> Balances
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   {participants.map((p) => {
                     const bal = balances[p.id] ?? 0;
+                    const isPositive = bal > 0;
+                    const isNegative = bal < 0;
                     return (
-                      <li
-                        key={p.id}
-                        className={`flex justify-between items-center px-4 py-2 rounded border ${bal > 0
-                            ? "bg-green-50 border-green-200 text-green-800 dark:bg-green-700/70 dark:border-green-700 dark:text-green-100"
-                            : bal < 0
-                              ? "bg-red-50 border-red-200 text-red-800 dark:bg-red-700/70 dark:border-red-700 dark:text-red-100"
-                              : "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-700/70 dark:border-gray-700 dark:text-gray-100"
-                          }`}
-                      >
-                        <span>{p.name}</span>
-                        <span>₹{bal.toFixed(2)}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-
-              <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-lg dark:bg-gray-900/80 dark:border-gray-800">
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <Divide className="text-cyan-600 dark:text-cyan-400" /> Settlements
-                </h3>
-                {settlements.length === 0 ? (
-                  <p className="text-gray-500 italic dark:text-gray-400">All settled up! 🎉</p>
-                ) : (
-                  <ul className="space-y-3">
-                    {settlements.map(({ from, to, amount }, i) => (
-                      <li
-                        key={i}
-                        className="flex flex-wrap justify-between items-center bg-gray-50 border border-gray-200 rounded-md p-3 gap-2 dark:bg-gray-950 dark:border-gray-800"
-                      >
-                        <div>
-                          <div className="text-sm">
-                            {participantMap[from]?.name || from} pays {participantMap[to]?.name || to}
+                      <div key={p.id} className="flex items-center justify-between group">
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-semibold">
+                            {p.name.charAt(0)}
                           </div>
-                          <div className="text-xs text-slate-600 dark:text-slate-400">Auto computed</div>
+                          <span className="font-medium">{p.name}</span>
                         </div>
+                        <div className={`font-semibold ${isPositive ? "text-green-600" : isNegative ? "text-red-500" : "text-muted-foreground"}`}>
+                          {bal > 0 ? "+" : ""}{bal.toFixed(2)}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      const name = prompt("Enter participant name:");
+                      if (name) addParticipant(name);
+                    }}
+                  >
+                    <UserPlus className="mr-2 h-4 w-4" /> Add Participant
+                  </Button>
+                </CardFooter>
+              </Card>
 
-                        <div className="flex items-center gap-3">
-                          <span className="font-semibold">₹{amount.toFixed(2)}</span>
-                          <button
-                            onClick={() => openPayModal(from, to, amount)}
-                            className="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 text-white rounded-md transition flex items-center gap-2 dark:bg-cyan-500 dark:hover:bg-cyan-600"
-                            title="Settle via UPI"
-                          >
-                            <CreditCard size={14} /> Pay
-                          </button>
-                          <Link
-                            to="/upi"
-                            state={{ from: participantMap[from], to: participantMap[to], amount }}
-                            className="px-3 py-1 bg-gray-100 border border-gray-300 text-gray-900 rounded-md hover:bg-gray-200 transition hidden md:inline-block dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
-                          >
-                            Open UPI Page
-                          </Link>
+              {/* Settlements */}
+              <Card className="border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/30 dark:bg-indigo-900/10">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-indigo-700 dark:text-indigo-400">
+                    <Divide className="h-4 w-4" /> Settlements
+                  </CardTitle>
+                  <CardDescription>Suggested payments to clear debts.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {settlements.length === 0 ? (
+                    <div className="text-sm text-muted-foreground text-center py-2">
+                      All settled up! 🎉
+                    </div>
+                  ) : (
+                    settlements.map((s, i) => (
+                      <div key={i} className="bg-background/80 p-3 rounded-md border text-sm flex flex-col gap-2 shadow-sm">
+                        <div className="flex justify-between items-center">
+                          <span>
+                            <span className="font-medium">{participantMap[s.from]?.name}</span> represents <br />
+                            <span className="text-muted-foreground text-xs">pays</span> <span className="font-medium">{participantMap[s.to]?.name}</span>
+                          </span>
+                          <span className="font-bold text-base">₹{s.amount.toFixed(2)}</span>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
+                        <Button
+                          size="sm"
+                          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                          onClick={() => openPayModal(s.from, s.to, s.amount)}
+                        >
+                          Settle Up
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* AI Assistant Card */}
+              <AIAssistantCard userName={user?.username || "Friend"} />
             </div>
           </div>
-        </main>
+        </div>
+
+        {/* Pay Modal */}
+        <Dialog open={payModal.open} onOpenChange={(open) => !open && !payModal.loading && closePayModal()}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Make Settlement</DialogTitle>
+              <DialogDescription>
+                Record a payment from {participantMap[payModal.from]?.name} to {participantMap[payModal.to]?.name}.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="py-6 flex flex-col items-center justify-center space-y-4">
+              <div className="text-4xl font-bold tracking-tighter">
+                ₹{payModal.amount.toFixed(2)}
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                <span>{participantMap[payModal.from]?.name}</span>
+                <ArrowRightCircle className="h-4 w-4" />
+                <span>{participantMap[payModal.to]?.name}</span>
+              </div>
+            </div>
+
+            <DialogFooter className="sm:justify-between gap-4">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  createSettlementExpense(payModal.from, payModal.to, payModal.amount);
+                  showToast("Marked as paid (manual)", "success");
+                  closePayModal();
+                }}
+                disabled={payModal.loading}
+              >
+                Mark as Paid Manually
+              </Button>
+              <Button
+                onClick={handlePayNow}
+                disabled={payModal.loading}
+                className="flex-1"
+              >
+                {payModal.loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Pay Now (Simulated)
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Global Toast */}
+        <AnimatePresence>
+          {toast && (
+            <Toast key="t" message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+          )}
+        </AnimatePresence>
       </div>
-
-      {/* Pay Modal */}
-      <AnimatePresence>
-        {payModal.open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
-            <div
-              className="absolute inset-0 bg-black/50"
-              onClick={() => {
-                if (!payModal.loading) closePayModal();
-              }}
-            />
-            <motion.div
-              initial={{ y: 12, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 12, opacity: 0 }}
-              className="relative w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 shadow-xl dark:bg-gray-900/95 dark:border-gray-800"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <ArrowRightCircle className="text-cyan-600 dark:text-cyan-400" />
-                  <div>
-                    <div className="font-semibold">Pay Now</div>
-                    <div className="text-xs text-slate-600 dark:text-slate-400">
-                      {participantMap[payModal.from]?.name || payModal.from} →{" "}
-                      {participantMap[payModal.to]?.name || payModal.to}
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => !payModal.loading && closePayModal()}
-                  className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="mb-3">
-                <div className="text-sm text-slate-600 dark:text-slate-400">Amount</div>
-                <div className="text-2xl font-light font-serif">₹{payModal.amount.toFixed(2)}</div>
-              </div>
-
-              <div className="mb-4">
-                <label className="text-sm text-slate-700 dark:text-slate-300 block mb-1">UPI ID (mock)</label>
-                <input
-                  value={payModal.upi ?? ""}
-                  onChange={(e) => setPayModal((p) => ({ ...p, upi: e.target.value }))}
-                  placeholder="example@upi"
-                  className="w-full p-3 rounded-md bg-white border border-gray-300 focus:outline-none dark:bg-gray-950 dark:border-gray-800"
-                  disabled={payModal.loading}
-                />
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handlePayNow}
-                  className="flex-1 flex items-center justify-center gap-3 px-4 py-2 rounded-md bg-cyan-600 text-white font-semibold hover:bg-cyan-700 disabled:opacity-60 dark:bg-cyan-500 dark:hover:bg-cyan-600"
-                  disabled={payModal.loading}
-                >
-                  {payModal.loading ? <Loader2 className="animate-spin" /> : <CreditCard />}
-                  {payModal.loading ? "Processing..." : "Pay Now"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (!payModal.loading) {
-                      createSettlementExpense(payModal.from, payModal.to, payModal.amount);
-                      showToast("Marked as paid (manual)", "success");
-                      closePayModal();
-                    }
-                  }}
-                  className="px-4 py-2 rounded-md bg-gray-100 border border-gray-300 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700"
-                  disabled={payModal.loading}
-                >
-                  Mark Paid
-                </button>
-              </div>
-
-              <div className="text-xs text-slate-600 dark:text-slate-500 mt-3">
-                This is a mock payment flow for demo purposes.
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Toast */}
-      <AnimatePresence>
-        {toast && (
-          <Toast key="t" message={toast.message} type={toast.type} onClose={() => setToast(null)} />
-        )}
-      </AnimatePresence>
-    </div>
+    </TooltipProvider>
   );
 }

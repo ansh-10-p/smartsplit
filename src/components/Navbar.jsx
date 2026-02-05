@@ -86,6 +86,7 @@ export default function Navbar() {
       { to: "/reminders", label: "Reminders" },
       { to: "/groups", label: "Groups" },
       { to: "/transactions", label: "Transactions" },
+      { to: "/ai-chat", label: "AI Chat" },
       { to: "/settings", label: "Settings" },
     ],
     []

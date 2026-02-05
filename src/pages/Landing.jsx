@@ -1,13 +1,29 @@
-// src/pages/LandingPage.jsx
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TestimonialsCarousel from "../components/TestimonialsCarousel";
-import { Lightning, Bell, CreditCard, Sun, Moon } from "phosphor-react";
+import { Lightning, Bell, CreditCard, Sun, Moon, Check, X as XIcon } from "phosphor-react";
+import { motion } from "framer-motion";
+import { Wallet, Receipt, Users, ArrowRight } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Web3MediaHero } from "@/components/ui/web3media-hero";
+import { Footer } from "@/components/ui/footer-section";
+import NumberFlow from "@number-flow/react";
 
 const features = [
-  { icon: Lightning, title: "AI Expense Categorization", desc: "Automatically tags your expenses so you spend less time sorting and more time living." },
+  { icon: Receipt, title: "AI Expense Categorization", desc: "Automatically tags your expenses so you spend less time sorting and more time living." },
   { icon: Bell, title: "Fun & Friendly Reminders", desc: "Never miss a payment with gentle, timely nudges your friends will actually appreciate." },
-  { icon: CreditCard, title: "One‑Tap Pay Mock", desc: "Simplify settling up with a single tap — mock UPI payments to practice before real ones." },
+  { icon: Wallet, title: "One‑Tap Pay Mock", desc: "Simplify settling up with a single tap — mock UPI payments to practice before real ones." },
 ];
 
 const howItWorks = [
@@ -22,19 +38,38 @@ const faqs = [
   { q: "Will my data sync?", a: "This demo stores data locally. Export/import from Settings anytime." },
 ];
 
-
-function MoneyBagIcon({ isDark }) {
-  const fillColor = isDark ? "#8b5cf6" : "#0ea5e9";
-  return (
-    <svg className="w-64 h-64 hover:scale-110 transition-transform duration-500" viewBox="0 0 64 64" fill="none">
-      <path d="M32 2C26 2 22 6 22 12v2H18c-3 0-5 3-5 6v24c0 3 2 6 5 6h28c3 0 5-3 5-6V20c0-3-2-6-5-6h-4v-2c0-6-4-10-10-10z" fill={fillColor} stroke={fillColor} strokeWidth="2" />
-      <path d="M22 20h20v8H22v-8z" fill="#fff" opacity="0.2" />
-      <circle cx="32" cy="20" r="2" fill="#fff" />
-    </svg>
-  );
-}
+const pricingPlans = [
+  {
+    name: "Free",
+    price: 0,
+    yearlyPrice: 0,
+    description: "Perfect for roommates and small trips.",
+    features: ["Unlimited Groups", "Basic Expense Tracking", "Mock UPI Payments", "Local Data Storage"],
+    cta: "Get Started",
+    popular: false,
+  },
+  {
+    name: "Pro",
+    price: 199,
+    yearlyPrice: 1599,
+    description: "For power users who travel often.",
+    features: ["Everything in Free", "Receipt Scanning (AI)", "Export to PDF/CSV", "Priority Support"],
+    cta: "Upgrade to Pro",
+    popular: true,
+  },
+  {
+    name: "Team",
+    price: 499,
+    yearlyPrice: 3999,
+    description: "Best for organizations and large events.",
+    features: ["Everything in Pro", "Team Management", "Advanced Analytics", "Dedicated Account Manager"],
+    cta: "Contact Sales",
+    popular: false,
+  },
+];
 
 export default function LandingPage() {
+  const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("theme");
@@ -43,182 +78,257 @@ export default function LandingPage() {
     }
     return true;
   });
+  const [isYearly, setIsYearly] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
     document.documentElement.classList.toggle("dark", darkMode);
   }, [darkMode]);
 
-  const gradients = {
-    dark: "from-purple-400 via-fuchsia-300 to-cyan-300",
-    light: "from-cyan-600 via-sky-600 to-emerald-600",
-  };
-
-  const textMuted = darkMode ? "text-slate-300" : "text-slate-600";
-  const cardBg =
-    "rounded-xl border transition-shadow duration-300 " +
-    (darkMode ? "bg-white/10 border-white/10 hover:shadow-purple-500/20 backdrop-blur-md" : "bg-white border-gray-200 hover:shadow-cyan-400/20");
-
   return (
-    <div className={`${darkMode ? "bg-[#07061A] text-white" : "bg-gradient-to-b from-white via-sky-50 to-emerald-50 text-gray-900"} min-h-screen`}>
-      {/* Ambient glows */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className={`absolute w-[80vmax] h-[80vmax] rounded-full blur-[120px] opacity-40 -top-40 -left-40 ${darkMode ? "bg-fuchsia-700/30" : "bg-cyan-400/25"}`} />
-        <div className={`absolute w-[60vmax] h-[60vmax] rounded-full blur-[120px] opacity-30 bottom-0 right-0 ${darkMode ? "bg-cyan-600/30" : "bg-purple-500/20"}`} />
+    <div className="min-h-screen bg-background text-foreground transition-colors overflow-x-hidden">
+      {/* Navbar Overlay for Theme Toggle */}
+      <div className="fixed top-0 right-0 p-6 z-50">
+        <Button
+          variant="secondary"
+          size="icon"
+          onClick={() => setDarkMode(!darkMode)}
+          className="rounded-full shadow-lg border border-border/50 backdrop-blur-md bg-background/50"
+        >
+          {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </Button>
       </div>
 
-      {/* Floating theme toggle */}
-      <button
-        onClick={() => setDarkMode((s) => !s)}
-        aria-label="Toggle theme"
-        className={`fixed right-5 top-5 z-10 px-3 py-2 rounded-lg ring-1 ${darkMode ? "ring-white/20 hover:bg-white/10" : "ring-black/10 hover:bg-black/5"}`}
-      >
-        {darkMode ? <><Sun className="w-4 h-4 mr-2" />Light</> : <><Moon className="w-4 h-4 mr-2" />Dark</>}
-      </button>
+      {/* Hero Component Integration */}
+      <Web3MediaHero
+        logo="SmartSplit"
+        title="Split Smart."
+        highlightedText="Pay Easy."
+        subtitle="Manage group expenses with AI categorization, playful reminders, and one‑tap mock payments. The easiest way to share expenses."
+        ctaButton={{
+          label: "Get Started Free",
+          onClick: () => navigate("/signup"),
+        }}
+        navigation={[
+          { label: "Features", onClick: () => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" }) },
+          { label: "Pricing", onClick: () => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" }) },
+          { label: "FAQ", onClick: () => document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" }) },
+          { label: "Demo", onClick: () => navigate("/dashboard") },
+        ]}
+        cryptoIcons={[
+          {
+            icon: <Wallet className="w-8 h-8 text-cyan-400" />,
+            label: "Track",
+            position: { x: "15%", y: "20%" },
+          },
+          {
+            icon: <Receipt className="w-8 h-8 text-purple-400" />,
+            label: "Scan",
+            position: { x: "80%", y: "25%" },
+          },
+          {
+            icon: <Users className="w-8 h-8 text-fuchsia-400" />,
+            label: "Split",
+            position: { x: "75%", y: "65%" },
+          },
+          {
+            icon: <ArrowRight className="w-8 h-8 text-emerald-400" />,
+            label: "Pay",
+            position: { x: "10%", y: "60%" },
+          },
+        ]}
+        brands={[
+          { logo: <div className="text-xl font-bold text-muted-foreground/50">Airbnb</div> },
+          { logo: <div className="text-xl font-bold text-muted-foreground/50">Uber</div> },
+          { logo: <div className="text-xl font-bold text-muted-foreground/50">Spotify</div> },
+          { logo: <div className="text-xl font-bold text-muted-foreground/50">Netflix</div> },
+          { logo: <div className="text-xl font-bold text-muted-foreground/50">Zomato</div> },
+        ]}
+      />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${darkMode ? "from-purple-900/10 via-fuchsia-900/5 to-cyan-900/10" : "from-cyan-100 via-blue-50 to-emerald-100"}`} />
-        <div className="relative max-w-6xl mx-auto px-6 pt-28 pb-16 grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <h1 className={`text-6xl md:text-7xl font-thin font-serif bg-clip-text text-transparent bg-gradient-to-r ${darkMode ? gradients.dark : gradients.light} leading-tight tracking-medium`}>
-              Split Smart. Pay Easy.
-            </h1>
-            <p className={`${textMuted} text-lg max-w-lg leading-relaxed`}>
-              Manage group expenses with AI categorization, playful reminders, and one‑tap mock payments. Neon‑nice, friction‑free.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-              <Link
-                to="/signup"
-                className={`px-6 py-3 rounded-xl font-semibold shadow transition-all duration-200 ${darkMode
-                  ? "bg-purple-600 hover:bg-purple-500 text-white"
-                  : "bg-cyan-600 hover:bg-cyan-500 text-white"
-                  }`}
-              >
-                Get Started
-              </Link>
-              <Link
-                to="/dashboard"
-                className={`px-6 py-3 rounded-xl ring-1 transition-all duration-200 ${darkMode
-                  ? "ring-white/15 hover:bg-white/10 text-white"
-                  : "ring-gray-300 hover:bg-gray-50 text-gray-700"
-                  }`}
-              >
-                Live Demo
-              </Link>
-            </div>
-            <p className={`text-xs ${textMuted} pt-2`}>Tip: Press Ctrl/Cmd + K for quick commands.</p>
-          </div>
-          <div className="flex items-center justify-center">
-            <MoneyBagIcon isDark={darkMode} />
-          </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <div className="grid sm:grid-cols-3 gap-8">
+      {/* Stats Section */}
+      <section className="container mx-auto px-6 py-12 relative z-20 -mt-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { n: "5k+", t: "Groups managed" },
-            { n: "₹2Cr+", t: "Expenses tracked" },
-            { n: "98%", t: "Settle success (mock)" },
-          ].map((s) => (
-            <div key={s.t} className={`${cardBg} p-8 text-center space-y-2`}>
-              <div className={`text-4xl font-extrabold ${darkMode
-                ? "bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent"
-                : "bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent"
-                }`}>{s.n}</div>
-              <div className={`${textMuted} text-lg`}>{s.t}</div>
-            </div>
+            { label: "Groups Managed", value: "5k+" },
+            { label: "Expenses Tracked", value: "₹2Cr+" },
+            { label: "Settlement Rate", value: "98%" },
+          ].map((stat, i) => (
+            <Card key={i} className="text-center border border-border/10 shadow-xl bg-background/5 backdrop-blur-md">
+              <CardContent className="pt-6">
+                <h3 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-foreground to-muted-foreground">
+                  {stat.value}
+                </h3>
+                <p className="text-muted-foreground mt-2">{stat.label}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </section>
 
-      {/* Feature cards */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <h2 className="text-4xl font-light font-serif mb-12 text-center tracking-wide">Why SmartSplit?</h2>
+      <Separator className="my-12 opacity-50 max-w-6xl mx-auto" />
+
+      {/* Features Grid */}
+      <section id="features" className="container mx-auto px-6 py-20 relative">
+        <div className="text-center mb-16">
+          <Badge variant="outline" className="mb-4">Why SmartSplit?</Badge>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">Everything you need</h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Detailed features to help you split expenses effortlessly.</p>
+        </div>
         <div className="grid md:grid-cols-3 gap-8">
-          {features.map((f) => (
-            <div key={f.title} className={`${cardBg} p-8 space-y-4`}>
-              <div className="mb-4">
-                <f.icon className="w-12 h-12 text-purple-400" weight="fill" />
-              </div>
-              <h3 className="text-xl font-light mb-3 tracking-wide">{f.title}</h3>
-              <p className={`${textMuted} leading-relaxed`}>{f.desc}</p>
-            </div>
+          {features.map((f, i) => (
+            <Card key={i} className="border border-border/50 shadow-lg bg-card/30 backdrop-blur-sm hover:border-purple-500/50 transition-colors">
+              <CardHeader>
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center mb-4 text-primary border border-white/10">
+                  <f.icon className="h-6 w-6" />
+                </div>
+                <CardTitle>{f.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">
+                  {f.desc}
+                </p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <h2 className="text-4xl font-light font-serif mb-12 text-center tracking-wide">How it works</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          {howItWorks.map((s) => (
-            <div key={s.step} className={`${cardBg} p-8 space-y-4`}>
-              <div className={`w-10 h-10 rounded-full grid place-items-center font-bold text-lg ${darkMode
-                ? "bg-purple-600 text-white"
-                : "bg-cyan-600 text-white"
-                }`}>
-                {s.step}
-              </div>
-              <h4 className="font-light text-lg mb-2 tracking-wide">{s.title}</h4>
-              <p className={`${textMuted} leading-relaxed`}>{s.desc}</p>
-            </div>
+      {/* Pricing Section */}
+      <section id="pricing" className="container mx-auto px-6 py-20 relative">
+        <div className="text-center mb-12 space-y-4">
+          <Badge variant="secondary" className="mb-2">Simple Pricing</Badge>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Choose your plan</h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Transparent pricing. All plans include unlimited friends.
+          </p>
+        </div>
+
+        {/* Pricing Toggle */}
+        <div className="flex justify-center mb-12">
+          <div className="relative mx-auto flex w-fit rounded-full bg-muted/50 border border-border p-1">
+            <button
+              onClick={() => setIsYearly(false)}
+              className={`relative z-10 w-fit h-10 sm:h-12 rounded-full px-4 sm:px-6 py-2 font-medium transition-colors ${!isYearly
+                ? "text-white"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              {!isYearly && (
+                <motion.span
+                  layoutId="pricing-switch"
+                  className="absolute top-0 left-0 h-full w-full rounded-full bg-gradient-to-r from-purple-600 to-cyan-600 shadow-lg"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+              <span className="relative">Monthly</span>
+            </button>
+
+            <button
+              onClick={() => setIsYearly(true)}
+              className={`relative z-10 w-fit h-10 sm:h-12 rounded-full px-4 sm:px-6 py-2 font-medium transition-colors ${isYearly
+                ? "text-white"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              {isYearly && (
+                <motion.span
+                  layoutId="pricing-switch"
+                  className="absolute top-0 left-0 h-full w-full rounded-full bg-gradient-to-r from-purple-600 to-cyan-600 shadow-lg"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+              <span className="relative flex items-center gap-2">
+                Yearly
+                <span className="rounded-full bg-purple-100 dark:bg-purple-900/50 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-300">
+                  Save 20%
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {pricingPlans.map((plan, index) => (
+            <motion.div
+              key={plan.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+            >
+              <Card
+                className={`relative flex flex-col h-full bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all ${plan.popular ? "border-purple-500 shadow-2xl shadow-purple-500/20 scale-105 z-10" : "border-border/50"}`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                    <Badge className="bg-gradient-to-r from-purple-600 to-cyan-600 border-0 px-4 py-1">Most Popular</Badge>
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                  <CardDescription>{plan.description}</CardDescription>
+                  <div className="flex items-baseline gap-1 pt-4">
+                    <span className="text-4xl font-bold">
+                      ₹
+                      <NumberFlow
+                        value={isYearly ? plan.yearlyPrice : plan.price}
+                        format={{ notation: "standard" }}
+                        className="inline"
+                      />
+                    </span>
+                    <span className="text-muted-foreground">/{isYearly ? "year" : "month"}</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-1">
+                  <ul className="space-y-3">
+                    {plan.features.map((feat, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <div className="rounded-full bg-green-500/10 p-1 text-green-500">
+                          <Check className="h-3 w-3" weight="bold" />
+                        </div>
+                        <span className="text-sm text-muted-foreground">{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    className={`w-full ${plan.popular ? "bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 shadow-lg shadow-purple-500/25" : ""}`}
+                    variant={plan.popular ? "default" : "outline"}
+                    size="lg"
+                  >
+                    {plan.cta}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </motion.div>
           ))}
         </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <h2 className="text-4xl font-light font-serif mb-12 text-center tracking-wide">What users say</h2>
-        <TestimonialsCarousel darkMode={darkMode} />
       </section>
 
       {/* FAQ */}
-      <section className="max-w-4xl mx-auto px-6 py-16">
-        <h2 className="text-4xl font-light font-serif mb-12 text-center tracking-wide">FAQ</h2>
+      <section id="faq" className="max-w-3xl mx-auto px-6 py-16 mb-20">
+        <h2 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
         <div className="space-y-4">
-          {faqs.map((f) => (
-            <details key={f.q} className={`${cardBg} p-6`}>
-              <summary className="cursor-pointer font-light text-lg mb-2 tracking-wide">{f.q}</summary>
-              <p className={`${textMuted} mt-3 leading-relaxed`}>{f.a}</p>
-            </details>
+          {faqs.map((f, i) => (
+            <Card key={i} className="border-border/40 bg-card/20">
+              <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors rounded-t-lg">
+                <CardTitle className="text-lg font-medium flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-purple-500" />
+                  {f.q}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-muted-foreground pt-0 mt-4">
+                {f.a}
+              </CardContent>
+            </Card>
           ))}
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="max-w-6xl mx-auto px-6 pt-8 pb-16">
-        <div className={`${cardBg} p-8 md:p-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6`}>
-          <div className="space-y-3">
-            <h3 className="text-3xl font-light font-serif tracking-wide">Ready to split smarter?</h3>
-            <p className={`${textMuted} text-lg`}>Start free — export/import anytime from Settings.</p>
-          </div>
-          <div className="flex gap-4">
-            <Link
-              to="/signup"
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${darkMode
-                ? "bg-purple-600 hover:bg-purple-500 text-white"
-                : "bg-cyan-600 hover:bg-cyan-500 text-white"
-                }`}
-            >
-              Create account
-            </Link>
-            <Link
-              to="/reminders"
-              className={`px-6 py-3 rounded-xl ring-1 transition-all duration-200 ${darkMode
-                ? "ring-white/15 hover:bg-white/10 text-white"
-                : "ring-gray-300 hover:bg-gray-50 text-gray-700"
-                }`}
-            >
-              Try reminders
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <footer className={`text-center text-sm py-8 ${textMuted}`}>© 2025 SmartSplit</footer>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
