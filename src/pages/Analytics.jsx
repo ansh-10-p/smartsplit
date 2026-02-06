@@ -194,14 +194,26 @@ export default function Analytics() {
             <div className="max-w-7xl mx-auto px-6 space-y-8">
                 {/* Key Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                        <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-shadow">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                    >
+                        <Card className="relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
-                                <Receipt className="h-4 w-4 text-red-500" />
+                                <motion.div
+                                    className="p-2 bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-md"
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <Receipt className="h-4 w-4 text-white" />
+                                </motion.div>
                             </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold text-red-600 dark:text-red-400">
+                            <CardContent className="relative z-10">
+                                <div className="text-4xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">
                                     ₹<NumberFlow value={totalExpense} format={{ notation: "compact" }} />
                                 </div>
                                 <div className="flex items-center gap-1 mt-2 text-sm">
@@ -219,14 +231,26 @@ export default function Analytics() {
                         </Card>
                     </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                        <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-shadow">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                    >
+                        <Card className="relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Income</CardTitle>
-                                <TrendingUp className="h-4 w-4 text-green-500" />
+                                <motion.div
+                                    className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg shadow-md"
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <TrendingUp className="h-4 w-4 text-white" />
+                                </motion.div>
                             </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                            <CardContent className="relative z-10">
+                                <div className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
                                     ₹<NumberFlow value={totalIncome} format={{ notation: "compact" }} />
                                 </div>
                                 <p className="text-sm text-muted-foreground mt-2">
@@ -236,14 +260,26 @@ export default function Analytics() {
                         </Card>
                     </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                        <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-shadow">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                    >
+                        <Card className="relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Net Balance</CardTitle>
-                                <Wallet className="h-4 w-4 text-blue-500" />
+                                <motion.div
+                                    className="p-2 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg shadow-md"
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <Wallet className="h-4 w-4 text-white" />
+                                </motion.div>
                             </CardHeader>
-                            <CardContent>
-                                <div className={`text-3xl font-bold ${netBalance >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                            <CardContent className="relative z-10">
+                                <div className={`text-4xl font-bold ${netBalance >= 0 ? "bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent" : "bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent"}`}>
                                     ₹<NumberFlow value={netBalance} format={{ notation: "compact" }} />
                                 </div>
                                 <p className="text-sm text-muted-foreground mt-2">
@@ -253,14 +289,26 @@ export default function Analytics() {
                         </Card>
                     </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                        <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-shadow">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                    >
+                        <Card className="relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Avg Daily Spending</CardTitle>
-                                <Calendar className="h-4 w-4 text-purple-500" />
+                                <motion.div
+                                    className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md"
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <Calendar className="h-4 w-4 text-white" />
+                                </motion.div>
                             </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                            <CardContent className="relative z-10">
+                                <div className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
                                     ₹<NumberFlow value={avgDailySpending} format={{ notation: "compact", maximumFractionDigits: 0 }} />
                                 </div>
                                 <p className="text-sm text-muted-foreground mt-2">
@@ -274,7 +322,7 @@ export default function Analytics() {
                 {/* Charts Row 1 */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Monthly Trend */}
-                    <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg">
+                    <Card className="backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-all">
                         <CardHeader>
                             <CardTitle>Income vs Expenses Trend</CardTitle>
                             <CardDescription>Track your financial flow over time</CardDescription>
@@ -301,7 +349,7 @@ export default function Analytics() {
                     </Card>
 
                     {/* Category Breakdown Pie */}
-                    <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg">
+                    <Card className="backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-all">
                         <CardHeader>
                             <CardTitle>Spending by Category</CardTitle>
                             <CardDescription>Where your money goes</CardDescription>
@@ -337,7 +385,7 @@ export default function Analytics() {
                 </div>
 
                 {/* Top Categories */}
-                <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg">
+                <Card className="backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg">
                     <CardHeader>
                         <CardTitle>Top Spending Categories</CardTitle>
                         <CardDescription>Your biggest expense areas</CardDescription>
@@ -347,30 +395,39 @@ export default function Analytics() {
                             {topCategories.map((cat, index) => {
                                 const percentage = ((cat.value / totalExpense) * 100).toFixed(1);
                                 return (
-                                    <div key={cat.name} className="space-y-2">
+                                    <motion.div
+                                        key={cat.name}
+                                        className="space-y-2 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        whileHover={{ x: 4 }}
+                                    >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div
-                                                    className="w-3 h-3 rounded-full"
+                                                <motion.div
+                                                    className="w-4 h-4 rounded-full shadow-md"
                                                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                                                    whileHover={{ scale: 1.3, rotate: 180 }}
+                                                    transition={{ duration: 0.3 }}
                                                 />
                                                 <span className="font-medium">{cat.name}</span>
                                             </div>
                                             <div className="flex items-center gap-4">
-                                                <span className="text-sm text-muted-foreground">{percentage}%</span>
-                                                <span className="font-semibold">₹{cat.value.toFixed(0)}</span>
+                                                <span className="text-sm text-muted-foreground font-semibold">{percentage}%</span>
+                                                <span className="font-bold text-lg">₹{cat.value.toFixed(0)}</span>
                                             </div>
                                         </div>
-                                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                            <div
-                                                className="h-2 rounded-full transition-all"
-                                                style={{
-                                                    width: `${percentage}%`,
-                                                    backgroundColor: COLORS[index % COLORS.length],
-                                                }}
+                                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                                            <motion.div
+                                                className="h-2.5 rounded-full"
+                                                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${percentage}%` }}
+                                                transition={{ duration: 0.8, delay: index * 0.1 + 0.2, ease: "easeOut" }}
                                             />
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 );
                             })}
                         </div>

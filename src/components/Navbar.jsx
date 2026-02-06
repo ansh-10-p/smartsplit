@@ -3,13 +3,57 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../App";
-import { PlusCircle, X, Receipt, Bell, Users, ArrowRight } from "lucide-react";
-import { Lightning } from "phosphor-react";
+import {
+  PlusCircle,
+  X,
+  Receipt,
+  Bell,
+  Users,
+  ArrowRight,
+  Search,
+  Home,
+  LayoutDashboard,
+  Clock,
+  UsersRound,
+  CreditCard,
+  Bot,
+  Settings,
+  Sparkles,
+  Menu,
+  Sun,
+  Moon,
+  LogOut,
+  User,
+  ChevronDown,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const EXP_KEY_V1 = "smartsplit_expenses_v1";
 
 function classNames(...xs) {
   return xs.filter(Boolean).join(" ");
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  try {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return "";
+  }
 }
 
 export default function Navbar() {
@@ -39,8 +83,6 @@ export default function Navbar() {
   // UI state
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [cmdQuery, setCmdQuery] = useState("");
   const [quickAddOpen, setQuickAddOpen] = useState(false);
@@ -69,8 +111,6 @@ export default function Navbar() {
       } else if (e.key === "Escape") {
         setCmdOpen(false);
         setMobileOpen(false);
-        setUserMenuOpen(false);
-        setNotifOpen(false);
         setQuickAddOpen(false);
       }
     };
@@ -78,16 +118,15 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Data
+  // Navigation links with icons
   const links = useMemo(
     () => [
-      { to: "/", label: "Home" },
-      { to: "/dashboard", label: "Dashboard" },
-      { to: "/reminders", label: "Reminders" },
-      { to: "/groups", label: "Groups" },
-      { to: "/transactions", label: "Transactions" },
-      { to: "/ai-chat", label: "AI Chat" },
-      { to: "/settings", label: "Settings" },
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/transactions", label: "Transactions", icon: CreditCard },
+      { to: "/groups", label: "Groups", icon: UsersRound },
+      { to: "/analytics", label: "Analytics", icon: Sparkles },
+      { to: "/budget", label: "Budget", icon: Receipt },
+      { to: "/ai-chat", label: "AI Assistant", icon: Bot },
     ],
     []
   );
@@ -97,12 +136,12 @@ export default function Navbar() {
   const balanceDisplay =
     typeof user?.balance === "number" ? `₹${user.balance.toFixed(2)}` : "—";
 
-  const activeClass =
-    "text-purple-300 font-semibold relative after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-purple-500 after:to-cyan-400";
-
   const commands = [
-    { id: "add", label: "Quick Add", run: () => setQuickAddOpen(true) },
+    { id: "add", label: "Quick Add Expense", run: () => setQuickAddOpen(true) },
     { id: "dashboard", label: "Open Dashboard", run: () => nav("/dashboard") },
+    { id: "analytics", label: "Open Analytics", run: () => nav("/analytics") },
+    { id: "budget", label: "Open Budget", run: () => nav("/budget") },
+    { id: "profile", label: "Open Profile", run: () => nav("/profile") },
     { id: "settings", label: "Open Settings", run: () => nav("/settings") },
     { id: "toggle-theme", label: "Toggle Dark Mode", run: () => setDarkMode((s) => !s) },
     {
@@ -151,8 +190,8 @@ export default function Navbar() {
     }
   };
 
-  // Hide navbar on landing (if you already do this elsewhere, ignore)
-  if (pathname === "/") return null;
+  // Hide navbar on landing, login, and signup pages
+  if (pathname === "/" || pathname === "/login" || pathname === "/signup") return null;
 
   return (
     <>
@@ -160,271 +199,201 @@ export default function Navbar() {
         initial={{ y: -12, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className={classNames(
-          "fixed top-0 left-0 w-full z-50 transition-shadow",
-          "bg-gradient-to-b from-[#0f1117]/90 to-[#0f1117]/70 dark:from-[#0b0d14]/90 dark:to-[#0b0d14]/70 backdrop-blur-xl",
-          "border-b border-white/10",
-          isScrolled ? "shadow-[0_10px_30px_-10px_rgba(0,0,0,0.45)]" : ""
+          "fixed top-0 left-0 w-full z-50 transition-all duration-300",
+          "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl",
+          "border-b",
+          isScrolled
+            ? "border-slate-200 dark:border-slate-800 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50"
+            : "border-transparent"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="h-16 flex items-center justify-between gap-3">
             {/* Left: Brand */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-6">
               <button
-                className="md:hidden p-2 rounded-lg hover:bg-white/10 transition"
+                className="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 aria-label="Open menu"
                 onClick={() => setMobileOpen((s) => !s)}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" className="text-gray-300">
-                  <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
+                <Menu className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => nav("/dashboard")}>
+              <Link to="/dashboard" className="flex items-center gap-2 group">
                 <motion.div
                   whileHover={{ rotate: 8, scale: 1.06 }}
                   transition={{ type: "spring", stiffness: 260, damping: 12 }}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center ring-1 ring-white/15 relative overflow-hidden"
-                  style={{
-                    background:
-                      "conic-gradient(from 180deg at 50% 50%, #7C3AED, #C084FC, #22D3EE, #7C3AED)",
-                  }}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-purple-600 to-cyan-600 shadow-lg"
                 >
-                  <Lightning className="w-5 h-5 text-white" weight="fill" />
-                  <span className="pointer-events-none absolute inset-0 opacity-30 blur-lg bg-white/10" />
+                  <Sparkles className="w-5 h-5 text-white" />
                 </motion.div>
-                <div className="flex items-center gap-2">
-                  <Link
-                    to="/"
-                    className="text-lg font-extrabold bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent"
-                  >
-                    SmartSplit
-                  </Link>
-                  <motion.span
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="hidden sm:inline px-2 py-0.5 text-[10px] font-semibold rounded-full bg-purple-500/20 text-purple-300 ring-1 ring-purple-500/30"
-                  >
-                    Hackathon
-                  </motion.span>
-                </div>
-              </div>
-            </div>
+                <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent">
+                  SmartSplit
+                </span>
+              </Link>
 
-            {/* Center: Links + Search */}
-            <div className="hidden md:flex items-center gap-6">
-              {links.map(({ to, label }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  className={({ isActive }) =>
-                    classNames(
-                      "text-sm text-gray-300 hover:text-purple-300 transition px-0.5 py-2 relative",
-                      isActive && activeClass
-                    )
-                  }
-                >
-                  {label}
-                </NavLink>
-              ))}
-
-              <button
-                onClick={() => setCmdOpen(true)}
-                className="group hidden lg:flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition"
-                title="Search or jump (Ctrl/Cmd + K)"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" className="text-gray-400 group-hover:text-purple-300">
-                  <path d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
-                </svg>
-                <span className="text-sm">Search</span>
-                <span className="ml-2 text-[10px] text-gray-400 rounded border border-white/10 px-1.5 py-0.5">⌘K</span>
-              </button>
+              {/* Desktop Navigation */}
+              <nav className="hidden md:flex items-center gap-1">
+                {links.map(({ to, label, icon: Icon }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    className={({ isActive }) =>
+                      classNames(
+                        "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all",
+                        isActive
+                          ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                          : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
+                      )
+                    }
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{label}</span>
+                  </NavLink>
+                ))}
+              </nav>
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="hidden sm:block text-xs sm:text-sm bg-white/5 text-gray-100 px-3 py-1.5 rounded-lg ring-1 ring-white/10">
-                <span className="block text-[10px] text-gray-400 leading-none">Balance</span>
-                <span className="font-semibold leading-none">{balanceDisplay}</span>
-              </div>
-
-              {/* Add -> opens Quick Add modal */}
+            <div className="flex items-center gap-2">
+              {/* Search */}
               <button
-                onClick={() => setQuickAddOpen(true)}
-                className="hidden sm:flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg transition shadow-sm"
-                title="Quick Add"
+                onClick={() => setCmdOpen(true)}
+                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition group"
+                title="Search (Ctrl/Cmd + K)"
               >
-                <PlusCircle size={18} /> <span className="font-medium">Add</span>
+                <Search className="w-4 h-4" />
+                <span className="text-sm">Search</span>
+                <kbd className="ml-2 text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                  ⌘K
+                </kbd>
               </button>
 
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setNotifOpen((s) => !s);
-                    setUserMenuOpen(false);
-                  }}
-                  className="p-2 rounded-lg hover:bg-white/10 transition relative"
-                  aria-label="Notifications"
+              {/* Quick Add */}
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={() => setQuickAddOpen(true)}
+                  className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 shadow-lg"
+                  size="sm"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" className="text-gray-300">
-                    <path
-                      d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .53-.21 1.04-.59 1.41L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-fuchsia-400 rounded-full ring-2 ring-[#0f1117]" />
-                </button>
+                  <PlusCircle className="w-4 h-4" />
+                  <span>Add</span>
+                </Button>
+              </motion.div>
 
-                {notifOpen && (
-                  <div className="absolute right-0 mt-2 w-72 bg-[#0f1117] border border-white/10 rounded-xl shadow-2xl p-2 z-50">
-                    <div className="px-2 py-1 text-xs uppercase tracking-wider text-gray-400">Notifications</div>
-                    <div className="divide-y divide-white/10">
-                      {[
-                        { t: "Raj settled ₹420 with you", ts: "2m ago" },
-                        { t: "Asha added Grocery expense", ts: "1h ago" },
-                        { t: "New group invite: Goa Trip", ts: "Yesterday" },
-                      ].map((n, i) => (
-                        <div key={i} className="p-3 hover:bg-white/5 rounded-lg">
-                          <div className="text-sm text-gray-200">{n.t}</div>
-                          <div className="text-xs text-gray-500">{n.ts}</div>
-                        </div>
-                      ))}
-                    </div>
-                    <button
-                      onClick={() => setNotifOpen(false)}
-                      className="mt-2 w-full text-center text-xs text-purple-300 hover:text-purple-200 py-1"
-                    >
-                      View all
-                    </button>
-                  </div>
-                )}
-              </div>
+              {/* Notifications */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                onClick={() => nav("/notifications")}
+              >
+                <Bell className="w-5 h-5" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900" />
+              </Button>
 
-              <button
+              {/* Theme Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setDarkMode((s) => !s)}
                 aria-label="Toggle theme"
-                className="p-2 rounded-lg hover:bg-white/10 transition"
-                title="Toggle theme"
               >
                 {darkMode ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m8.485-8.485h1m-16 0h1M6.343 6.343l.707.707m12.728 0l-.707.707M6.343 17.657l.707-.707m12.728 0l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z" />
-                  </svg>
+                  <Sun className="h-5 w-5 text-yellow-500" />
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
-                  </svg>
+                  <Moon className="h-5 w-5 text-slate-600" />
                 )}
-              </button>
+              </Button>
 
-              <div className="relative">
-                {user ? (
-                  <>
-                    <button
+              {/* User Menu */}
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2 px-2">
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback className="bg-gradient-to-br from-purple-600 to-cyan-600 text-white font-semibold">
+                          {avatarInitial}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="hidden md:inline text-sm font-medium">{username}</span>
+                      <ChevronDown className="w-4 h-4 hidden md:block" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col">
+                        <span className="font-semibold">{username}</span>
+                        <span className="text-xs text-muted-foreground">{user?.email || "user@smartsplit.com"}</span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => nav("/profile")}>
+                      <User className="w-4 h-4 mr-2" />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => nav("/settings")}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => nav("/help")}>
+                      <Bell className="w-4 h-4 mr-2" />
+                      Help Center
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
                       onClick={() => {
-                        setUserMenuOpen((s) => !s);
-                        setNotifOpen(false);
+                        logout?.();
+                        nav("/");
                       }}
-                      className="flex items-center gap-2 focus:outline-none px-2 py-1 rounded-lg hover:bg-white/10"
+                      className="text-red-600 dark:text-red-400"
                     >
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-fuchsia-500 flex items-center justify-center text-white font-semibold">
-                        {avatarInitial}
-                      </div>
-                      <span className="hidden md:inline text-gray-300">{username}</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" className="text-gray-400 hidden md:block">
-                        <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
-                      </svg>
-                    </button>
-
-                    {userMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-[#0f1117] border border-white/10 rounded-xl shadow-2xl py-1 z-50">
-                        <Link
-                          to="/profile"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="block px-4 py-2 text-gray-200 hover:bg-white/5"
-                        >
-                          Profile
-                        </Link>
-                        <Link
-                          to="/settings"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="block px-4 py-2 text-gray-200 hover:bg-white/5"
-                        >
-                          Settings
-                        </Link>
-                        <button
-                          onClick={() => {
-                            logout?.();
-                            setUserMenuOpen(false);
-                            nav("/");
-                          }}
-                          className="block w-full text-left px-4 py-2 text-gray-200 hover:bg-white/5"
-                        >
-                          Logout
-                        </button>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <button
-                    onClick={() => nav("/login")}
-                    className="text-purple-300 hover:text-purple-100 transition px-2 py-1 rounded-lg hover:bg-white/10"
-                  >
-                    Login
-                  </button>
-                )}
-              </div>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button onClick={() => nav("/login")} size="sm">
+                  Login
+                </Button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Mobile sheet */}
-        {mobileOpen && (
-          <div className="md:hidden border-t border-white/10 bg-[#0f1117]/95 backdrop-blur-xl">
-            <div className="px-4 py-3 flex items-center gap-2">
-              <button
-                onClick={() => setCmdOpen(true)}
-                className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" className="text-gray-400">
-                  <path d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
-                </svg>
-                <span className="text-sm">Search</span>
-                <span className="ml-auto text-[10px] text-gray-500">Ctrl/Cmd K</span>
-              </button>
-              <button
-                onClick={() => {
-                  setMobileOpen(false);
-                  setQuickAddOpen(true);
-                }}
-                className="px-3 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white"
-              >
-                Add
-              </button>
-            </div>
-            <div className="px-4 pb-3 space-y-1">
-              {links.map(({ to, label }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  onClick={() => setMobileOpen(false)}
-                  className={({ isActive }) =>
-                    classNames(
-                      "block px-3 py-2 rounded-lg text-gray-200 hover:bg-white/5",
-                      isActive && "bg-white/10 text-purple-300"
-                    )
-                  }
-                >
-                  {label}
-                </NavLink>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden"
+            >
+              <div className="px-4 py-3 space-y-1">
+                {links.map(({ to, label, icon: Icon }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    onClick={() => setMobileOpen(false)}
+                    className={({ isActive }) =>
+                      classNames(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all",
+                        isActive
+                          ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                          : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      )
+                    }
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{label}</span>
+                  </NavLink>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
 
       {/* Command Palette */}
@@ -434,53 +403,197 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] grid place-items-center"
+            className="fixed inset-0 z-[60] grid place-items-center bg-black/60 backdrop-blur-sm"
             onClick={() => setCmdOpen(false)}
           >
-            <div className="absolute inset-0 bg-black/60" />
             <motion.div
-              initial={{ y: 16, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 16, opacity: 0 }}
-              className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#0f1117] p-3 shadow-2xl"
+              initial={{ y: 16, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 16, opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-0 shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-2 px-2">
-                <svg width="18" height="18" viewBox="0 0 24 24" className="text-gray-400">
-                  <path d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
-                </svg>
+              <div className="flex items-center gap-3 px-4 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <Search className="w-5 h-5 text-slate-400" />
                 <input
                   autoFocus
                   value={cmdQuery}
                   onChange={(e) => setCmdQuery(e.target.value)}
-                  placeholder="Type a command…"
-                  className="flex-1 bg-transparent outline-none text-gray-200 placeholder:text-gray-500 py-2"
+                  placeholder="Search expenses, groups, people..."
+                  className="flex-1 bg-transparent outline-none text-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
                 />
-                <kbd className="text-[10px] text-gray-500 border border-white/10 rounded px-1.5 py-0.5">
+                <kbd className="text-xs text-slate-400 border border-slate-200 dark:border-slate-700 rounded px-2 py-1 bg-white dark:bg-slate-800 shadow-sm">
                   Esc
                 </kbd>
               </div>
-              <div className="mt-2 max-h-64 overflow-auto rounded-xl border border-white/10">
-                {filteredCommands.length === 0 ? (
-                  <div className="p-4 text-sm text-gray-400">No matching commands</div>
-                ) : (
-                  <ul className="divide-y divide-white/10">
+
+              <div className="overflow-y-auto p-2">
+                {/* 1. Commands */}
+                {filteredCommands.length > 0 && (
+                  <div className="mb-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Actions
+                    </div>
                     {filteredCommands.map((c) => (
-                      <li key={c.id}>
-                        <button
-                          onClick={() => {
-                            c.run();
-                            setCmdOpen(false);
-                            setCmdQuery("");
-                          }}
-                          className="w-full text-left px-4 py-2 hover:bg-white/5 text-gray-200"
-                        >
-                          {c.label}
-                        </button>
-                      </li>
+                      <button
+                        key={c.id}
+                        onClick={() => {
+                          c.run();
+                          setCmdOpen(false);
+                          setCmdQuery("");
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-sm text-slate-700 dark:text-slate-300 transition-colors group"
+                      >
+                        <div className="p-1.5 bg-slate-200 dark:bg-slate-800 rounded text-slate-500 group-hover:bg-purple-100 group-hover:text-purple-600 transition-colors">
+                          {c.id.includes("add") ? <PlusCircle className="w-4 h-4" /> :
+                            c.id.includes("logout") ? <LogOut className="w-4 h-4" /> :
+                              c.id.includes("theme") ? (darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />) :
+                                <ArrowRight className="w-4 h-4" />}
+                        </div>
+                        {c.label}
+                      </button>
                     ))}
-                  </ul>
+                  </div>
                 )}
+
+                {/* 2. Expenses Search Results */}
+                {cmdQuery && (
+                  (() => {
+                    const expenses = JSON.parse(localStorage.getItem(EXP_KEY_V1) || "[]");
+                    const matches = expenses.filter(e =>
+                      e.name?.toLowerCase().includes(cmdQuery.toLowerCase()) ||
+                      e.amount?.toString().includes(cmdQuery) ||
+                      e.category?.toLowerCase().includes(cmdQuery.toLowerCase())
+                    ).slice(0, 5);
+
+                    if (matches.length === 0) return null;
+
+                    return (
+                      <div className="mb-2">
+                        <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider flex justify-between">
+                          <span>Expenses</span>
+                          <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">{matches.length} found</span>
+                        </div>
+                        {matches.map((e) => (
+                          <button
+                            key={e.id}
+                            onClick={() => {
+                              nav("/transactions"); // Ideally focused on this transaction
+                              setCmdOpen(false);
+                            }}
+                            className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-sm transition-colors group"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded text-slate-500 group-hover:text-purple-600">
+                                <CreditCard className="w-4 h-4" />
+                              </div>
+                              <div className="flex flex-col items-start">
+                                <span className="font-medium text-slate-900 dark:text-slate-100">{e.name}</span>
+                                <span className="text-xs text-slate-500">{e.category} • {formatDate(e.createdAt)}</span>
+                              </div>
+                            </div>
+                            <span className="font-semibold text-slate-900 dark:text-slate-100">₹{e.amount}</span>
+                          </button>
+                        ))}
+                      </div>
+                    );
+                  })()
+                )}
+
+                {/* 3. Groups Search Results */}
+                {cmdQuery && (
+                  (() => {
+                    const groups = JSON.parse(localStorage.getItem("smartsplit_groups_v1") || "[]");
+                    const matches = groups.filter(g =>
+                      g.name?.toLowerCase().includes(cmdQuery.toLowerCase())
+                    ).slice(0, 3);
+
+                    if (matches.length === 0) return null;
+
+                    return (
+                      <div className="mb-2">
+                        <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                          Groups
+                        </div>
+                        {matches.map((g) => (
+                          <button
+                            key={g.id}
+                            onClick={() => {
+                              nav("/groups");
+                              setCmdOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-sm transition-colors group"
+                          >
+                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded text-blue-600">
+                              <UsersRound className="w-4 h-4" />
+                            </div>
+                            <span className="font-medium text-slate-900 dark:text-slate-100">{g.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    );
+                  })()
+                )}
+
+                {/* 4. People/Participants Search Results */}
+                {cmdQuery && (
+                  (() => {
+                    const people = JSON.parse(localStorage.getItem("smartsplit_participants_v1") || "[]");
+                    const matches = people.filter(p =>
+                      p.name?.toLowerCase().includes(cmdQuery.toLowerCase())
+                    ).slice(0, 3);
+
+                    if (matches.length === 0) return null;
+
+                    return (
+                      <div className="mb-2">
+                        <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                          People
+                        </div>
+                        {matches.map((p) => (
+                          <div
+                            key={p.id}
+                            className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-sm transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <Avatar className="w-6 h-6">
+                                <AvatarFallback className="text-[10px] bg-emerald-100 text-emerald-700">
+                                  {p.name?.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium text-slate-900 dark:text-slate-100">{p.name}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()
+                )}
+
+                {/* No Results State */}
+                {cmdQuery && filteredCommands.length === 0 && (
+                  // Checking if other sections are empty is complex inside render, typically we'd compute this outside
+                  // For now, we assume if filteredCommands matches nothing and we typed something, it might be data search
+                  // We'll rely on visual feedback if nothing shows up
+                  null
+                )}
+
+                {!cmdQuery && (
+                  <div className="px-4 py-8 text-center text-slate-500">
+                    <div className="inline-flex p-3 rounded-full bg-slate-100 dark:bg-slate-800 mb-3">
+                      <Search className="w-6 h-6 text-slate-400" />
+                    </div>
+                    <p className="text-sm">Type to search expenses, groups, pages, or actions...</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-2 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-[10px] text-slate-400 flex justify-between px-4">
+                <div className="flex gap-2">
+                  <span><kbd className="font-sans">↑↓</kbd> to navigate</span>
+                  <span><kbd className="font-sans">↵</kbd> to select</span>
+                </div>
+                <span>Global Search</span>
               </div>
             </motion.div>
           </motion.div>
@@ -494,51 +607,59 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] grid place-items-center"
+            className="fixed inset-0 z-[60] grid place-items-center bg-black/60 backdrop-blur-sm"
             onClick={() => !qaSaving && setQuickAddOpen(false)}
           >
-            <div className="absolute inset-0 bg-black/60" />
             <motion.div
-              initial={{ y: 18, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 18, opacity: 0 }}
-              className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#0f1117] p-4 shadow-2xl"
+              initial={{ y: 18, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 18, opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <PlusCircle className="text-fuchsia-400" size={18} />
-                  <div className="font-semibold">Quick Add</div>
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                    <PlusCircle className="text-purple-600 dark:text-purple-400 w-5 h-5" />
+                  </div>
+                  <h3 className="font-semibold text-lg">Quick Add Expense</h3>
                 </div>
                 <button
                   onClick={() => !qaSaving && setQuickAddOpen(false)}
-                  className="p-1 rounded hover:bg-white/10"
+                  className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
-                  <X size={18} />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="rounded-lg border border-white/10 p-3">
-                  <div className="text-sm text-gray-400 mb-2">Expense</div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Expense Name</label>
                   <input
                     value={qaName}
                     onChange={(e) => setQaName(e.target.value)}
-                    placeholder="Name (e.g., Chai)"
-                    className="w-full mb-2 p-2 rounded bg-transparent border border-white/10 outline-none"
+                    placeholder="e.g., Dinner at Restaurant"
+                    className="w-full p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-purple-500"
                   />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Amount (₹)</label>
                   <input
                     value={qaAmount}
                     onChange={(e) => setQaAmount(e.target.value)}
-                    placeholder="Amount (₹)"
+                    placeholder="0.00"
                     type="number"
                     min="0"
-                    className="w-full mb-2 p-2 rounded bg-transparent border border-white/10 outline-none"
+                    step="0.01"
+                    className="w-full p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-purple-500"
                   />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Category</label>
                   <select
                     value={qaCategory}
                     onChange={(e) => setQaCategory(e.target.value)}
-                    className="w-full mb-3 p-2 rounded bg-transparent border border-white/10 outline-none"
+                    className="w-full p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option>Food</option>
                     <option>Shopping</option>
@@ -551,54 +672,14 @@ export default function Navbar() {
                     <option>Education</option>
                     <option>Others</option>
                   </select>
-                  <button
-                    onClick={handleQuickAddExpense}
-                    disabled={qaSaving}
-                    className="w-full px-3 py-2 rounded-md bg-purple-600 hover:bg-purple-500 disabled:opacity-60"
-                  >
-                    {qaSaving ? "Saving…" : "Save Expense"}
-                  </button>
                 </div>
-
-                <div className="rounded-lg border border-white/10 p-3">
-                  <div className="text-sm text-gray-400 mb-2">Shortcuts</div>
-                  <button
-                    onClick={() => {
-                      setQuickAddOpen(false);
-                      nav("/reminders?new=1");
-                    }}
-                    className="w-full mb-2 px-3 py-2 rounded-md bg-white/5 hover:bg-white/10 flex items-center justify-between"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Bell size={16} /> New Reminder
-                    </span>
-                    <ArrowRight size={16} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setQuickAddOpen(false);
-                      nav("/groups?new=1");
-                    }}
-                    className="w-full mb-2 px-3 py-2 rounded-md bg-white/5 hover:bg-white/10 flex items-center justify-between"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Users size={16} /> Create Group
-                    </span>
-                    <ArrowRight size={16} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setQuickAddOpen(false);
-                      nav("/transactions");
-                    }}
-                    className="w-full px-3 py-2 rounded-md bg-white/5 hover:bg-white/10 flex items-center justify-between"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Receipt size={16} /> Open Transactions
-                    </span>
-                    <ArrowRight size={16} />
-                  </button>
-                </div>
+                <Button
+                  onClick={handleQuickAddExpense}
+                  disabled={qaSaving}
+                  className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700"
+                >
+                  {qaSaving ? "Saving..." : "Save Expense"}
+                </Button>
               </div>
             </motion.div>
           </motion.div>
@@ -613,7 +694,7 @@ export default function Navbar() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 10, opacity: 0 }}
             className={classNames(
-              "fixed bottom-6 right-6 px-4 py-2 rounded shadow-lg z-[70] max-w-xs",
+              "fixed bottom-6 right-6 px-4 py-3 rounded-lg shadow-lg z-[70] max-w-xs",
               toast.type === "success"
                 ? "bg-green-600 text-white"
                 : toast.type === "error"

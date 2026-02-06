@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../App";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell,
   CalendarDays,
@@ -300,9 +301,23 @@ export default function Reminders() {
         </header>
 
         {/* Create Reminder */}
-        <section className="p-5 rounded-2xl bg-white border border-gray-200 shadow-sm dark:bg-gray-900/80 dark:border-gray-800">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Bell className="text-purple-700 dark:text-purple-400" size={18} /> New Reminder
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200 shadow-xl dark:bg-gray-900/80 dark:border-gray-800 relative overflow-hidden"
+        >
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 pointer-events-none" />
+
+          <h2 className="text-xl font-bold flex items-center gap-2 relative z-10">
+            <motion.div
+              whileHover={{ rotate: 360 }}
+              transition={{ duration: 0.5 }}
+              className="p-2 rounded-xl bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white shadow-lg"
+            >
+              <Bell size={20} />
+            </motion.div>
+            New Reminder
           </h2>
 
           <div className="grid md:grid-cols-2 gap-4 mt-4">
@@ -405,144 +420,184 @@ export default function Reminders() {
               Create Reminder
             </button>
           </div>
-        </section>
+        </motion.section>
 
         {/* Reminders List */}
-        <section className="p-5 rounded-2xl bg-white border border-gray-200 shadow-sm dark:bg-gray-900/80 dark:border-gray-800">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Clock className="text-cyan-700 dark:text-cyan-400" size={18} /> Upcoming & Overdue
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200 shadow-xl dark:bg-gray-900/80 dark:border-gray-800 relative overflow-hidden"
+        >
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 pointer-events-none" />
+
+          <h2 className="text-xl font-bold flex items-center gap-2 mb-6 relative z-10">
+            <motion.div
+              whileHover={{ rotate: 360 }}
+              transition={{ duration: 0.5 }}
+              className="p-2 rounded-xl bg-gradient-to-br from-cyan-600 to-blue-600 text-white shadow-lg"
+            >
+              <Clock size={20} />
+            </motion.div>
+            Upcoming & Overdue
           </h2>
 
           {sortedReminders.length === 0 ? (
-            <p className="mt-3 text-slate-600 dark:text-slate-400">No reminders yet.</p>
+            <p className="mt-3 text-slate-600 dark:text-slate-400 text-center py-8">No reminders yet.</p>
           ) : (
-            <ul className="mt-4 space-y-3">
-              {sortedReminders.map((r) => {
-                const recipient = participantIdToParticipant[r.toId];
-                const overdue = r.dueAt < now && r.status !== "paid";
-                return (
-                  <li
-                    key={r.id}
-                    className="rounded-xl border border-gray-200 bg-gray-50 p-4 flex flex-col gap-3 dark:border-gray-800 dark:bg-gray-950"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="flex items-start gap-3">
-                        {r.memeUrl ? (
-                          <img
-                            src={r.memeUrl}
-                            alt="meme"
-                            className="h-14 w-24 object-cover rounded-md border border-gray-200 dark:border-gray-800"
-                          />
-                        ) : (
-                          <div className="h-14 w-24 rounded-md bg-gray-200 grid place-items-center text-xs text-slate-600 dark:bg-gray-800 dark:text-slate-400">
-                            No meme
-                          </div>
-                        )}
-                        <div>
-                          <div className="font-semibold">
-                            {recipient?.name || "Friend"} owes ₹{r.amount.toFixed(2)}
-                          </div>
-                          <div className="text-sm text-slate-700 dark:text-slate-400">
-                            Due {formatDate(r.dueAt)}
-                          </div>
-                          <div className="mt-1">
-                            <span
-                              className={`inline-block text-xs px-2 py-0.5 rounded ${r.status === "paid"
-                                  ? "bg-green-100 text-green-800 dark:bg-green-600/30 dark:text-green-200"
+            <AnimatePresence>
+              <ul className="mt-4 space-y-4 relative z-10">
+                {sortedReminders.map((r, idx) => {
+                  const recipient = participantIdToParticipant[r.toId];
+                  const overdue = r.dueAt < now && r.status !== "paid";
+                  return (
+                    <motion.li
+                      key={r.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ delay: idx * 0.05 }}
+                      whileHover={{ scale: 1.01, x: 4 }}
+                      className="rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm p-5 flex flex-col gap-4 dark:border-gray-700 dark:bg-gray-900/90 shadow-lg hover:shadow-xl transition-all duration-200 relative overflow-hidden"
+                    >
+                      {/* Gradient overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 relative z-10">
+                        <div className="flex items-start gap-4">
+                          {r.memeUrl ? (
+                            <motion.img
+                              whileHover={{ scale: 1.05 }}
+                              src={r.memeUrl}
+                              alt="meme"
+                              className="h-16 w-28 object-cover rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-md"
+                            />
+                          ) : (
+                            <div className="h-16 w-28 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 grid place-items-center text-xs text-slate-600 dark:text-slate-400 shadow-md">
+                              No meme
+                            </div>
+                          )}
+                          <div>
+                            <div className="font-bold text-lg text-slate-900 dark:text-white">
+                              {recipient?.name || "Friend"} owes ₹{r.amount.toFixed(2)}
+                            </div>
+                            <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                              Due {formatDate(r.dueAt)}
+                            </div>
+                            <div className="mt-2">
+                              <motion.span
+                                whileHover={{ scale: 1.05 }}
+                                className={`inline-block text-xs px-3 py-1.5 rounded-full font-semibold shadow-sm ${r.status === "paid"
+                                    ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
+                                    : r.status === "sent"
+                                      ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                                      : overdue
+                                        ? "bg-gradient-to-r from-red-500 to-pink-500 text-white"
+                                        : "bg-gradient-to-r from-gray-400 to-gray-500 text-white"
+                                  }`}
+                              >
+                                {r.status === "paid"
+                                  ? "✓ Paid"
                                   : r.status === "sent"
-                                    ? "bg-blue-100 text-blue-800 dark:bg-blue-600/30 dark:text-blue-200"
+                                    ? "→ Sent"
                                     : overdue
-                                      ? "bg-red-100 text-red-800 dark:bg-red-600/30 dark:text-red-200"
-                                      : "bg-gray-200 text-gray-800 dark:bg-gray-600/30 dark:text-gray-200"
-                                }`}
-                            >
-                              {r.status === "paid"
-                                ? "Paid"
-                                : r.status === "sent"
-                                  ? "Sent"
-                                  : overdue
-                                    ? "Overdue"
-                                    : "Pending"}
-                            </span>
+                                      ? "⚠ Overdue"
+                                      : "○ Pending"}
+                              </motion.span>
+                            </div>
                           </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 sm:ml-4 relative z-10">
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => sendAndPay(r.id)}
+                            className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium shadow-md"
+                            title="Send reminder and open Pay Now"
+                          >
+                            Send & Pay
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => payNow(r.id)}
+                            className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white flex items-center gap-2 font-medium shadow-md"
+                            title="Open UPI Pay"
+                          >
+                            <CreditCard size={16} /> Pay Now
+                          </motion.button>
+
+                          <details className="ml-auto">
+                            <summary className="list-none">
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 flex items-center gap-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white dark:border-gray-600 shadow-sm"
+                              >
+                                <MoreHorizontal size={16} /> More
+                              </motion.button>
+                            </summary>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => snoozeReminder(r.id, 30)}
+                                className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white dark:border-gray-600"
+                                title="Snooze 30m"
+                              >
+                                Snooze
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => markPaid(r.id)}
+                                className="px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white flex items-center gap-1.5"
+                                title="Mark as Paid"
+                              >
+                                <CheckCircle2 size={16} /> Mark Paid
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => deleteReminder(r.id)}
+                                className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white"
+                                title="Delete"
+                              >
+                                <Trash2 size={16} />
+                              </motion.button>
+                            </div>
+                          </details>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2 sm:ml-4">
-                        <button
-                          onClick={() => sendAndPay(r.id)}
-                          className="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white"
-                          title="Send reminder and open Pay Now"
-                        >
-                          Send & Pay
-                        </button>
-                        <button
-                          onClick={() => payNow(r.id)}
-                          className="px-3 py-1.5 rounded-md bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-1.5"
-                          title="Open UPI Pay"
-                        >
-                          <CreditCard size={16} /> Pay Now
-                        </button>
-
-                        <details className="ml-auto">
-                          <summary className="list-none">
-                            <button className="px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 flex items-center gap-1.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white dark:border-gray-700">
-                              <MoreHorizontal size={16} /> More
-                            </button>
-                          </summary>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            <button
-                              onClick={() => snoozeReminder(r.id, 30)}
-                              className="px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white dark:border-gray-700"
-                              title="Snooze 30m"
-                            >
-                              Snooze
-                            </button>
-                            <button
-                              onClick={() => markPaid(r.id)}
-                              className="px-3 py-1.5 rounded-md bg-green-600 hover:bg-green-700 text-white flex items-center gap-1.5"
-                              title="Mark as Paid"
-                            >
-                              <CheckCircle2 size={16} /> Mark Paid
-                            </button>
-                            <button
-                              onClick={() => deleteReminder(r.id)}
-                              className="px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white"
-                              title="Delete"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </details>
-                      </div>
-                    </div>
-
-                    <details>
-                      <summary className="text-sm text-slate-700 cursor-pointer dark:text-slate-400">
-                        Details
-                      </summary>
-                      <div className="mt-2 text-sm text-slate-700 dark:text-slate-300">
-                        {r.message && <div className="mb-1">“{r.message}”</div>}
-                        <div>Due: {formatDate(r.dueAt)}</div>
-                        {r.lastSentAt && <div>Last sent: {formatDate(r.lastSentAt)}</div>}
-                        {r.timesSent ? <div>Times sent: {r.timesSent}</div> : null}
-                      </div>
-                    </details>
-                  </li>
-                );
-              })}
-            </ul>
+                      <details className="relative z-10">
+                        <summary className="text-sm text-slate-700 cursor-pointer dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                          Details
+                        </summary>
+                        <div className="mt-2 text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg">
+                          {r.message && <div className="mb-1 italic">"{r.message}"</div>}
+                          <div>Due: {formatDate(r.dueAt)}</div>
+                          {r.lastSentAt && <div>Last sent: {formatDate(r.lastSentAt)}</div>}
+                          {r.timesSent ? <div>Times sent: {r.timesSent}</div> : null}
+                        </div>
+                      </details>
+                    </motion.li>
+                  );
+                })}
+              </ul>
+            </AnimatePresence>
           )}
-        </section>
+        </motion.section>
       </div>
 
       {toast && (
         <div
           className={`fixed bottom-6 right-6 max-w-sm px-4 py-2 rounded shadow-md cursor-pointer z-50 ${toast.type === "success"
-              ? "bg-green-600 text-white"
-              : toast.type === "error"
-                ? "bg-red-600 text-white"
-                : "bg-blue-600 text-white"
+            ? "bg-green-600 text-white"
+            : toast.type === "error"
+              ? "bg-red-600 text-white"
+              : "bg-blue-600 text-white"
             }`}
           onClick={() => setToast(null)}
         >

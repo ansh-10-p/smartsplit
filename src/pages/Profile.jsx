@@ -103,21 +103,29 @@ export default function Profile() {
 
             <div className="max-w-5xl mx-auto px-6 -mt-20">
                 {/* Profile Card */}
-                <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-2xl mb-6">
+                <Card className="relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-2xl mb-6">
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
                             {/* Avatar */}
                             <div className="relative">
-                                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-600 to-cyan-600 flex items-center justify-center text-white text-4xl font-bold shadow-xl">
+                                <motion.div
+                                    className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-600 to-cyan-600 flex items-center justify-center text-white text-4xl font-bold shadow-xl"
+                                    whileHover={{ scale: 1.05, rotate: 5 }}
+                                    transition={{ duration: 0.3 }}
+                                >
                                     {profile.avatar ? (
                                         <img src={profile.avatar} alt="Avatar" className="w-full h-full rounded-full object-cover" />
                                     ) : (
                                         profile.name.charAt(0).toUpperCase()
                                     )}
-                                </div>
-                                <button className="absolute bottom-0 right-0 w-10 h-10 bg-white dark:bg-slate-800 rounded-full shadow-lg flex items-center justify-center border-2 border-slate-200 dark:border-slate-700 hover:scale-110 transition-transform">
+                                </motion.div>
+                                <motion.button
+                                    className="absolute bottom-0 right-0 w-10 h-10 bg-white dark:bg-slate-800 rounded-full shadow-lg flex items-center justify-center border-2 border-slate-200 dark:border-slate-700"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                >
                                     <Camera className="w-5 h-5 text-purple-600" />
-                                </button>
+                                </motion.button>
                             </div>
 
                             {/* Profile Info */}
@@ -140,57 +148,102 @@ export default function Profile() {
                                             </div>
                                         </div>
                                     </div>
-                                    <Button
-                                        onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-                                        className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700"
-                                    >
-                                        {isEditing ? (
-                                            <>
-                                                <Save className="w-4 h-4 mr-2" />
-                                                Save Changes
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Edit2 className="w-4 h-4 mr-2" />
-                                                Edit Profile
-                                            </>
-                                        )}
-                                    </Button>
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                        <Button
+                                            onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
+                                            className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 shadow-lg hover:shadow-xl transition-all"
+                                        >
+                                            {isEditing ? (
+                                                <>
+                                                    <Save className="w-4 h-4 mr-2" />
+                                                    Save Changes
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Edit2 className="w-4 h-4 mr-2" />
+                                                    Edit Profile
+                                                </>
+                                            )}
+                                        </Button>
+                                    </motion.div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Stats */}
                         <Separator className="my-6" />
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="text-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                                <Receipt className="w-6 h-6 mx-auto mb-2 text-purple-600" />
-                                <div className="text-2xl font-bold">
+                            <motion.div
+                                className="text-center p-4 backdrop-blur-sm bg-gradient-to-br from-purple-50/80 to-purple-100/80 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg border border-purple-200/60 dark:border-purple-700/60"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                                whileHover={{ y: -4, scale: 1.02 }}
+                            >
+                                <motion.div
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <Receipt className="w-6 h-6 mx-auto mb-2 text-purple-600" />
+                                </motion.div>
+                                <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
                                     <NumberFlow value={totalTransactions} />
                                 </div>
                                 <div className="text-sm text-muted-foreground">Transactions</div>
-                            </div>
-                            <div className="text-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                                <Users className="w-6 h-6 mx-auto mb-2 text-cyan-600" />
-                                <div className="text-2xl font-bold">
+                            </motion.div>
+                            <motion.div
+                                className="text-center p-4 backdrop-blur-sm bg-gradient-to-br from-cyan-50/80 to-cyan-100/80 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-lg border border-cyan-200/60 dark:border-cyan-700/60"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                whileHover={{ y: -4, scale: 1.02 }}
+                            >
+                                <motion.div
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <Users className="w-6 h-6 mx-auto mb-2 text-cyan-600" />
+                                </motion.div>
+                                <div className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-cyan-700 bg-clip-text text-transparent">
                                     <NumberFlow value={totalGroups} />
                                 </div>
                                 <div className="text-sm text-muted-foreground">Groups</div>
-                            </div>
-                            <div className="text-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                                <TrendingUp className="w-6 h-6 mx-auto mb-2 text-green-600" />
-                                <div className="text-2xl font-bold">
+                            </motion.div>
+                            <motion.div
+                                className="text-center p-4 backdrop-blur-sm bg-gradient-to-br from-green-50/80 to-green-100/80 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border border-green-200/60 dark:border-green-700/60"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                whileHover={{ y: -4, scale: 1.02 }}
+                            >
+                                <motion.div
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <TrendingUp className="w-6 h-6 mx-auto mb-2 text-green-600" />
+                                </motion.div>
+                                <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
                                     ₹<NumberFlow value={totalExpenses} format={{ notation: "compact" }} />
                                 </div>
                                 <div className="text-sm text-muted-foreground">Total Spent</div>
-                            </div>
-                            <div className="text-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                                <Award className="w-6 h-6 mx-auto mb-2 text-yellow-600" />
-                                <div className="text-2xl font-bold">
+                            </motion.div>
+                            <motion.div
+                                className="text-center p-4 backdrop-blur-sm bg-gradient-to-br from-yellow-50/80 to-yellow-100/80 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-lg border border-yellow-200/60 dark:border-yellow-700/60"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4 }}
+                                whileHover={{ y: -4, scale: 1.02 }}
+                            >
+                                <motion.div
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <Award className="w-6 h-6 mx-auto mb-2 text-yellow-600" />
+                                </motion.div>
+                                <div className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-yellow-700 bg-clip-text text-transparent">
                                     <NumberFlow value={Math.floor(totalTransactions * 10)} />
                                 </div>
                                 <div className="text-sm text-muted-foreground">Karma Points</div>
-                            </div>
+                            </motion.div>
                         </div>
                     </CardContent>
                 </Card>

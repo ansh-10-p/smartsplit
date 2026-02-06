@@ -182,7 +182,7 @@ export default function Notifications() {
 
             <div className="max-w-5xl mx-auto px-6 space-y-6">
                 {/* Actions Bar */}
-                <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg">
+                <Card className="backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg">
                     <CardContent className="pt-6">
                         <div className="flex flex-wrap items-center justify-between gap-4">
                             <div className="flex gap-2 flex-wrap">
@@ -232,7 +232,7 @@ export default function Notifications() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                         >
-                            <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg">
+                            <Card className="backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg">
                                 <CardContent className="py-16 text-center">
                                     <div className="w-20 h-20 mx-auto mb-4 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
                                         <Bell className="w-10 h-10 text-slate-400" />
@@ -258,15 +258,19 @@ export default function Notifications() {
                                     layout
                                 >
                                     <Card
-                                        className={`border-slate-200/60 dark:border-slate-700/60 shadow-md hover:shadow-lg transition-all ${!notif.read ? "border-l-4 border-l-purple-600" : ""
+                                        className={`backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-md hover:shadow-xl transition-all ${!notif.read ? "border-l-4 border-l-purple-600" : ""
                                             }`}
                                     >
                                         <CardContent className="p-4">
                                             <div className="flex items-start gap-4">
                                                 {/* Icon */}
-                                                <div className={`w-12 h-12 rounded-full ${notif.bgColor} flex items-center justify-center flex-shrink-0`}>
+                                                <motion.div
+                                                    className={`w-12 h-12 rounded-full ${notif.bgColor} flex items-center justify-center flex-shrink-0`}
+                                                    whileHover={{ scale: 1.1, rotate: 10 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
                                                     <notif.icon className={`w-6 h-6 ${notif.color}`} />
-                                                </div>
+                                                </motion.div>
 
                                                 {/* Content */}
                                                 <div className="flex-1 min-w-0">
@@ -287,23 +291,27 @@ export default function Notifications() {
                                                 {/* Actions */}
                                                 <div className="flex gap-1 flex-shrink-0">
                                                     {!notif.read && (
+                                                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                                            <Button
+                                                                size="icon"
+                                                                variant="ghost"
+                                                                onClick={() => markAsRead(notif.id)}
+                                                                className="h-8 w-8"
+                                                            >
+                                                                <Check className="w-4 h-4" />
+                                                            </Button>
+                                                        </motion.div>
+                                                    )}
+                                                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                                                         <Button
                                                             size="icon"
                                                             variant="ghost"
-                                                            onClick={() => markAsRead(notif.id)}
-                                                            className="h-8 w-8"
+                                                            onClick={() => deleteNotification(notif.id)}
+                                                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20"
                                                         >
-                                                            <Check className="w-4 h-4" />
+                                                            <X className="w-4 h-4" />
                                                         </Button>
-                                                    )}
-                                                    <Button
-                                                        size="icon"
-                                                        variant="ghost"
-                                                        onClick={() => deleteNotification(notif.id)}
-                                                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20"
-                                                    >
-                                                        <X className="w-4 h-4" />
-                                                    </Button>
+                                                    </motion.div>
                                                 </div>
                                             </div>
                                         </CardContent>

@@ -285,37 +285,51 @@ export default function Group() {
               </Card>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {groups.map((g) => (
-                  <Card
+                {groups.map((g, index) => (
+                  <motion.div
                     key={g.id}
-                    className="cursor-pointer hover:shadow-md transition-all hover:border-primary/50 group"
-                    onClick={() => setSelectedGroup(g)}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.4 }}
+                    whileHover={{ y: -8, scale: 1.02 }}
                   >
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-xl font-bold">{g.name}</CardTitle>
-                      <Badge variant="outline">{g.category}</Badge>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="mt-4 flex items-center justify-between">
-                        <div className="flex -space-x-2 overflow-hidden">
-                          {groupMemberKeys(g).slice(0, 4).map((m) => (
-                            <div key={m} className="inline-block h-8 w-8 rounded-full ring-2 ring-background bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold uppercase">
-                              {displayName(m).charAt(0)}
-                            </div>
-                          ))}
-                          {groupMemberKeys(g).length > 4 && (
-                            <div className="inline-block h-8 w-8 rounded-full ring-2 ring-background bg-muted flex items-center justify-center text-xs font-medium">
-                              +{groupMemberKeys(g).length - 4}
-                            </div>
-                          )}
+                    <Card
+                      className="cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 hover:border-primary/70 group backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 h-full relative overflow-hidden"
+                      onClick={() => setSelectedGroup(g)}
+                    >
+                      {/* Gradient overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                        <CardTitle className="text-xl font-bold group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{g.name}</CardTitle>
+                        <Badge variant="outline" className="bg-gradient-to-r from-purple-100 to-cyan-100 dark:from-purple-900/30 dark:to-cyan-900/30 border-purple-300 dark:border-purple-700">{g.category}</Badge>
+                      </CardHeader>
+                      <CardContent className="relative z-10">
+                        <div className="mt-4 flex items-center justify-between">
+                          <div className="flex -space-x-2 overflow-hidden">
+                            {groupMemberKeys(g).slice(0, 4).map((m) => (
+                              <motion.div
+                                key={m}
+                                whileHover={{ scale: 1.2, zIndex: 10 }}
+                                className="inline-block h-10 w-10 rounded-full ring-2 ring-background bg-gradient-to-br from-purple-400 to-cyan-400 dark:from-purple-600 dark:to-cyan-600 flex items-center justify-center text-xs font-bold uppercase text-white shadow-md"
+                              >
+                                {displayName(m).charAt(0)}
+                              </motion.div>
+                            ))}
+                            {groupMemberKeys(g).length > 4 && (
+                              <div className="inline-block h-10 w-10 rounded-full ring-2 ring-background bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-medium shadow-md">
+                                +{groupMemberKeys(g).length - 4}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="pt-0 justify-between items-center text-sm text-muted-foreground">
-                      <span>{g.expenses?.length || 0} expenses</span>
-                      <span className="font-semibold text-primary">₹{totalSpent(g).toFixed(0)}</span>
-                    </CardFooter>
-                  </Card>
+                      </CardContent>
+                      <CardFooter className="pt-0 justify-between items-center text-sm text-slate-600 dark:text-slate-300 relative z-10">
+                        <span className="font-medium">{g.expenses?.length || 0} expenses</span>
+                        <span className="font-bold text-lg bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent">₹{totalSpent(g).toFixed(0)}</span>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
             )}
@@ -386,10 +400,10 @@ export default function Group() {
             </div>
 
             {/* Expenses List */}
-            <Card>
+            <Card className="shadow-lg border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Recent Activity</CardTitle>
+                  <CardTitle className="text-2xl font-bold">Recent Activity</CardTitle>
                   <div className="flex items-center gap-2">
                     <div className="relative">
                       <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -410,26 +424,40 @@ export default function Group() {
                     No expenses yet. Add one to get started!
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {(selectedGroup.expenses || []).filter(e => e.title.toLowerCase().includes(searchQuery.toLowerCase())).map((e) => (
-                      <div key={e.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center gap-4">
-                          <div className="bg-primary/10 p-2 rounded-full text-primary">
-                            <CreditCard size={20} />
-                          </div>
-                          <div>
-                            <div className="font-medium">{e.title}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {displayName(expensePayerKey(e))} paid
+                  <AnimatePresence>
+                    <div className="space-y-3">
+                      {(selectedGroup.expenses || []).filter(e => e.title.toLowerCase().includes(searchQuery.toLowerCase())).map((e, idx) => (
+                        <motion.div
+                          key={e.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          transition={{ delay: idx * 0.05 }}
+                          whileHover={{ scale: 1.02, x: 4 }}
+                          className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-cyan-50 dark:hover:from-purple-900/20 dark:hover:to-cyan-900/20 transition-all duration-200 shadow-sm hover:shadow-md"
+                        >
+                          <div className="flex items-center gap-4">
+                            <motion.div
+                              whileHover={{ rotate: 360 }}
+                              transition={{ duration: 0.5 }}
+                              className="bg-gradient-to-br from-purple-500 to-cyan-500 p-3 rounded-xl text-white shadow-md"
+                            >
+                              <CreditCard size={20} />
+                            </motion.div>
+                            <div>
+                              <div className="font-semibold text-slate-900 dark:text-white">{e.title}</div>
+                              <div className="text-sm text-slate-600 dark:text-slate-400">
+                                {displayName(expensePayerKey(e))} paid
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="font-bold">
-                          ₹{Number(e.amount).toFixed(2)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                          <div className="font-bold text-lg bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent">
+                            ₹{Number(e.amount).toFixed(2)}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </AnimatePresence>
                 )}
               </CardContent>
             </Card>

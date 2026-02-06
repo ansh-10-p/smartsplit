@@ -25,6 +25,7 @@ import Navbar from "./components/Navbar";
 import CursorGlow from "./components/CursorGlow";
 import CommandPalette from "./components/CommandPalette";
 import AnimatedGrid from "./components/AnimatedGrid";
+import OnboardingFlow from "./components/OnboardingFlow";
 
 // Context
 export const AuthContext = React.createContext({
@@ -39,7 +40,7 @@ export default function App() {
   );
   const navigate = useNavigate();
   const location = useLocation();
-  const hideNavbar = location.pathname === "/";
+  const hideNavbar = location.pathname === "/" || location.pathname === "/login" || location.pathname === "/signup";
 
   useEffect(() => {
     localStorage.setItem("smartsplit_user", JSON.stringify(user));
@@ -67,7 +68,16 @@ export default function App() {
       <div className="min-h-screen text-slate-100 relative">
         <AnimatedGrid />
         <CursorGlow />
-        <CommandPalette />
+        {/* We moved CommandPalette to Navbar but keeping component import if needed elsewhere, 
+            though typically we want one global one. 
+            The Navbar now has the advanced one, so we should rely on that or disable this one if it duplicates.
+            Assuming the existing CommandPalette component was the old one, we can keep it for now 
+            or remove it if Navbar covers it. 
+            Let's keep it to avoid breaking changes but rely on Navbar's implementation for logged in users.
+         */}
+        {/* <CommandPalette /> */}
+
+        <OnboardingFlow />
 
         {!hideNavbar && <Navbar />}
 

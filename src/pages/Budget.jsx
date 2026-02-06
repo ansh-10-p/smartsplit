@@ -142,48 +142,90 @@ export default function Budget() {
             <div className="max-w-5xl mx-auto px-6 space-y-8">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">Total Budget</CardTitle>
-                            <DollarSign className="h-4 w-4 text-blue-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                                ₹<NumberFlow value={totalBudget} format={{ notation: "compact" }} />
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-2">This month</p>
-                        </CardContent>
-                    </Card>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                    >
+                        <Card className="relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                                <CardTitle className="text-sm font-medium text-muted-foreground">Total Budget</CardTitle>
+                                <motion.div
+                                    className="p-2 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg shadow-md"
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <DollarSign className="h-4 w-4 text-white" />
+                                </motion.div>
+                            </CardHeader>
+                            <CardContent className="relative z-10">
+                                <div className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                                    ₹<NumberFlow value={totalBudget} format={{ notation: "compact" }} />
+                                </div>
+                                <p className="text-sm text-muted-foreground mt-2">This month</p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
 
-                    <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">Total Spent</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-red-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-red-600 dark:text-red-400">
-                                ₹<NumberFlow value={totalSpent} format={{ notation: "compact" }} />
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-2">
-                                {totalBudget > 0 ? ((totalSpent / totalBudget) * 100).toFixed(1) : 0}% of budget
-                            </p>
-                        </CardContent>
-                    </Card>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                    >
+                        <Card className="relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                                <CardTitle className="text-sm font-medium text-muted-foreground">Total Spent</CardTitle>
+                                <motion.div
+                                    className="p-2 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg shadow-md"
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <TrendingUp className="h-4 w-4 text-white" />
+                                </motion.div>
+                            </CardHeader>
+                            <CardContent className="relative z-10">
+                                <div className="text-4xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">
+                                    ₹<NumberFlow value={totalSpent} format={{ notation: "compact" }} />
+                                </div>
+                                <p className="text-sm text-muted-foreground mt-2">
+                                    {totalBudget > 0 ? ((totalSpent / totalBudget) * 100).toFixed(1) : 0}% of budget
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
 
-                    <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">Remaining</CardTitle>
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className={`text-3xl font-bold ${totalRemaining >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                                ₹<NumberFlow value={Math.abs(totalRemaining)} format={{ notation: "compact" }} />
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-2">
-                                {totalRemaining >= 0 ? "Under budget" : "Over budget"}
-                            </p>
-                        </CardContent>
-                    </Card>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                    >
+                        <Card className="relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                                <CardTitle className="text-sm font-medium text-muted-foreground">Remaining</CardTitle>
+                                <motion.div
+                                    className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg shadow-md"
+                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <CheckCircle className="h-4 w-4 text-white" />
+                                </motion.div>
+                            </CardHeader>
+                            <CardContent className="relative z-10">
+                                <div className={`text-4xl font-bold ${totalRemaining >= 0 ? "bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent" : "bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent"}`}>
+                                    ₹<NumberFlow value={Math.abs(totalRemaining)} format={{ notation: "compact" }} />
+                                </div>
+                                <p className="text-sm text-muted-foreground mt-2">
+                                    {totalRemaining >= 0 ? "Under budget" : "Over budget"}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
                 </div>
 
                 {/* Create Budget Button */}
@@ -280,16 +322,18 @@ export default function Budget() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
                                 >
-                                    <Card className="border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-shadow">
+                                    <Card className="relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-slate-200/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl transition-all duration-300 group">
                                         <CardContent className="pt-6">
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div
-                                                        className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl"
-                                                        style={{ backgroundColor: `${category?.color}20` }}
+                                                    <motion.div
+                                                        className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shadow-md"
+                                                        style={{ backgroundColor: `${category?.color}20`, border: `2px solid ${category?.color}40` }}
+                                                        whileHover={{ scale: 1.1, rotate: 5 }}
+                                                        transition={{ duration: 0.3 }}
                                                     >
                                                         {category?.name.split(" ")[0]}
-                                                    </div>
+                                                    </motion.div>
                                                     <div>
                                                         <h3 className="font-semibold text-lg">{category?.name}</h3>
                                                         <p className="text-sm text-muted-foreground capitalize">{budget.period} budget</p>
@@ -332,15 +376,17 @@ export default function Budget() {
                                                         ₹{budget.spent.toFixed(0)} / ₹{budget.amount.toFixed(0)}
                                                     </span>
                                                 </div>
-                                                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                                                    <div
-                                                        className={`h-3 rounded-full transition-all ${budget.status === "exceeded"
-                                                                ? "bg-red-600"
-                                                                : budget.status === "warning"
-                                                                    ? "bg-orange-600"
-                                                                    : "bg-green-600"
+                                                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3.5 overflow-hidden shadow-inner">
+                                                    <motion.div
+                                                        className={`h-3.5 rounded-full ${budget.status === "exceeded"
+                                                            ? "bg-gradient-to-r from-red-500 to-red-600"
+                                                            : budget.status === "warning"
+                                                                ? "bg-gradient-to-r from-orange-500 to-orange-600"
+                                                                : "bg-gradient-to-r from-green-500 to-emerald-600"
                                                             }`}
-                                                        style={{ width: `${budget.percentage}%` }}
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${budget.percentage}%` }}
+                                                        transition={{ duration: 0.8, delay: index * 0.1 + 0.2, ease: "easeOut" }}
                                                     />
                                                 </div>
                                                 <div className="flex items-center justify-between text-sm">

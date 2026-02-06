@@ -1,6 +1,6 @@
 // src/pages/Transactions.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   PlusCircle,
@@ -13,6 +13,9 @@ import {
   Sparkles,
   Flame,
   Search,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
 } from "lucide-react";
 import {
   BarChart,
@@ -205,33 +208,69 @@ const ProfitLossChart = ({ totalIncome, totalExpense }) => {
 
   return (
     <motion.div
-      className="rounded-2xl p-5 shadow-lg ring-1 ring-black/10 bg-white dark:ring-white/10 dark:bg-gray-800"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      className="rounded-3xl p-6 shadow-2xl ring-1 ring-white/20 bg-gradient-to-br from-white/80 to-white/60 dark:from-gray-800/80 dark:to-gray-900/60 backdrop-blur-xl relative overflow-hidden"
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      whileHover={{ y: -4, shadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
     >
-      <h3 className="mb-4 font-semibold text-xl text-slate-800 dark:text-white">
-        Profit/Loss Summary {profit >= 0 ? "(Profit)" : "(Loss)"}
-      </h3>
-      <ResponsiveContainer width="100%" height={220}>
-        <BarChart data={data} margin={{ left: 10, right: 10 }}>
-          <XAxis dataKey="name" stroke="#94a3b8" />
-          <YAxis stroke="#94a3b8" />
-          <Tooltip
-            formatter={(v) => `₹${Number(v).toFixed(2)}`}
-            contentStyle={{ backgroundColor: "#0f172a", borderRadius: "6px", border: "none", color: "white" }}
-            labelStyle={{ color: "#cbd5e1" }}
-          />
-          <Bar
-            dataKey="amount"
-            fill={profit >= 0 ? "#10b981" : "#ef4444"}
-            barSize={48}
-            radius={[8, 8, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-      <p className={`mt-3 text-center text-lg font-semibold ${profit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
-        {profit >= 0 ? `Profit: ₹${profit.toFixed(2)}` : `Loss: ₹${Math.abs(profit).toFixed(2)}`}
-      </p>
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 opacity-50" />
+
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="font-bold text-2xl text-slate-800 dark:text-white flex items-center gap-2">
+            {profit >= 0 ? (
+              <>
+                <TrendingUp className="w-6 h-6 text-emerald-500" />
+                Profit Summary
+              </>
+            ) : (
+              <>
+                <TrendingDown className="w-6 h-6 text-red-500" />
+                Loss Summary
+              </>
+            )}
+          </h3>
+          <motion.div
+            className={`px-4 py-2 rounded-full font-semibold text-sm ${profit >= 0 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"}`}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.3, type: "spring" }}
+          >
+            {profit >= 0 ? `+₹${profit.toFixed(2)}` : `-₹${Math.abs(profit).toFixed(2)}`}
+          </motion.div>
+        </div>
+
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={data} margin={{ left: 10, right: 10 }}>
+            <XAxis dataKey="name" stroke="#94a3b8" />
+            <YAxis stroke="#94a3b8" />
+            <Tooltip
+              formatter={(v) => `₹${Number(v).toFixed(2)}`}
+              contentStyle={{ backgroundColor: "#0f172a", borderRadius: "12px", border: "none", color: "white", padding: "12px" }}
+              labelStyle={{ color: "#cbd5e1", fontWeight: "600" }}
+            />
+            <Bar
+              dataKey="amount"
+              fill={profit >= 0 ? "url(#profitGradient)" : "url(#lossGradient)"}
+              barSize={60}
+              radius={[12, 12, 0, 0]}
+            >
+              <defs>
+                <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="#059669" stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="lossGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ef4444" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="#dc2626" stopOpacity={1} />
+                </linearGradient>
+              </defs>
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </motion.div>
   );
 };
@@ -242,65 +281,123 @@ const ProfitLossChart = ({ totalIncome, totalExpense }) => {
 const GamificationPanel = ({ gamify, leaderboard }) => {
   return (
     <motion.div
-      className="rounded-2xl p-5 shadow-lg ring-1 ring-black/10 bg-white dark:ring-white/10 dark:bg-gray-800"
-      initial={{ opacity: 0, y: 12 }}
+      className="rounded-3xl p-6 shadow-2xl ring-1 ring-white/20 bg-gradient-to-br from-amber-50/90 to-orange-50/80 dark:from-gray-800/90 dark:to-gray-900/80 backdrop-blur-xl relative overflow-hidden"
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Trophy className="w-6 h-6 text-yellow-500" />
-          <div>
-            <div className="text-sm text-slate-500 dark:text-gray-300">Karma Points</div>
-            <div className="text-2xl font-extrabold text-slate-900 dark:text-white">{gamify.points}</div>
-          </div>
-        </div>
+      {/* Decorative gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-orange-500/5 to-red-500/10 pointer-events-none" />
 
-        <div className="flex items-center gap-3">
-          <Flame className="w-6 h-6 text-orange-500" />
-          <div>
-            <div className="text-sm text-slate-500 dark:text-gray-300">Streak</div>
-            <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
-              {gamify.streak} day{gamify.streak === 1 ? "" : "s"}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Sparkles className="w-5 h-5 text-purple-500" />
-          <div className="text-sm text-slate-600 dark:text-gray-300">Badges:</div>
-          {gamify.badges?.length ? (
-            gamify.badges.map((b) => (
-              <span
-                key={b}
-                className="px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-800 ring-1 ring-purple-200 dark:bg-purple-700/30 dark:text-purple-100 dark:ring-purple-600"
-              >
-                {b}
-              </span>
-            ))
-          ) : (
-            <span className="text-sm text-slate-500 dark:text-gray-500">Keep going to earn badges</span>
-          )}
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <div className="text-sm text-slate-600 dark:text-gray-300 mb-2">Leaderboard</div>
-        <ul className="space-y-1">
-          {leaderboard.map((row, idx) => (
-            <li
-              key={row.name}
-              className="flex items-center justify-between rounded-lg px-3 py-2 ring-1 ring-black/10 bg-white dark:ring-white/10 dark:bg-gray-900"
+      <div className="relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          {/* Karma Points */}
+          <motion.div
+            className="flex items-center gap-3 p-4 rounded-2xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg"
+            whileHover={{ scale: 1.05, y: -2 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <motion.div
+              className="p-3 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-lg"
+              whileHover={{ rotate: 360 }}
+              transition={{ duration: 0.6 }}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-xs w-6 h-6 grid place-items-center rounded-full bg-slate-200 text-slate-700 dark:bg-gray-700 dark:text-gray-200">
-                  {idx + 1}
-                </span>
-                <span className="font-medium text-slate-800 dark:text-white">{row.name}</span>
+              <Trophy className="w-6 h-6 text-white" />
+            </motion.div>
+            <div>
+              <div className="text-xs font-medium text-slate-600 dark:text-gray-400">Karma Points</div>
+              <div className="text-2xl font-extrabold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">{gamify.points}</div>
+            </div>
+          </motion.div>
+
+          {/* Streak */}
+          <motion.div
+            className="flex items-center gap-3 p-4 rounded-2xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg"
+            whileHover={{ scale: 1.05, y: -2 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <motion.div
+              className="p-3 rounded-xl bg-gradient-to-br from-orange-400 to-red-600 shadow-lg"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Flame className="w-6 h-6 text-white" />
+            </motion.div>
+            <div>
+              <div className="text-xs font-medium text-slate-600 dark:text-gray-400">Streak</div>
+              <div className="text-2xl font-extrabold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                {gamify.streak} {gamify.streak === 1 ? "day" : "days"}
               </div>
-              <span className="text-sm text-yellow-600 dark:text-yellow-300">{row.points} pts</span>
-            </li>
-          ))}
-        </ul>
+            </div>
+          </motion.div>
+
+          {/* Badges */}
+          <motion.div
+            className="flex items-start gap-3 p-4 rounded-2xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg"
+            whileHover={{ scale: 1.05, y: -2 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <motion.div
+              className="p-3 rounded-xl bg-gradient-to-br from-purple-400 to-pink-600 shadow-lg"
+              whileHover={{ rotate: 360 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Sparkles className="w-6 h-6 text-white" />
+            </motion.div>
+            <div className="flex-1">
+              <div className="text-xs font-medium text-slate-600 dark:text-gray-400 mb-2">Badges</div>
+              <div className="flex flex-wrap gap-1.5">
+                {gamify.badges?.length ? (
+                  gamify.badges.map((b, idx) => (
+                    <motion.span
+                      key={b}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="px-2 py-1 text-xs font-semibold rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md"
+                    >
+                      {b}
+                    </motion.span>
+                  ))
+                ) : (
+                  <span className="text-xs text-slate-500 dark:text-gray-500">Earn your first badge!</span>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Leaderboard */}
+        <div>
+          <h4 className="text-sm font-bold text-slate-700 dark:text-gray-200 mb-3 flex items-center gap-2">
+            <Trophy className="w-4 h-4" />
+            Leaderboard
+          </h4>
+          <ul className="space-y-2">
+            {leaderboard.map((row, idx) => (
+              <motion.li
+                key={row.name}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                whileHover={{ scale: 1.02, x: 4 }}
+                className="flex items-center justify-between rounded-xl px-4 py-3 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-md hover:shadow-lg transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`text-xs w-7 h-7 grid place-items-center rounded-full font-bold ${idx === 0 ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-lg" :
+                      idx === 1 ? "bg-gradient-to-br from-gray-300 to-gray-500 text-white shadow-md" :
+                        idx === 2 ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow-md" :
+                          "bg-slate-200 text-slate-700 dark:bg-gray-700 dark:text-gray-300"
+                    }`}>
+                    {idx + 1}
+                  </span>
+                  <span className="font-semibold text-slate-800 dark:text-white">{row.name}</span>
+                </div>
+                <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400">{row.points} pts</span>
+              </motion.li>
+            ))}
+          </ul>
+        </div>
       </div>
     </motion.div>
   );
@@ -749,19 +846,63 @@ const IncomeForm = ({ onAddIncome }) => {
 // Summary Card
 // --------------------------------------
 const SummaryCard = ({ title, value, color }) => {
-  const colorMap = {
-    green: "text-emerald-700 bg-emerald-50 ring-emerald-200 dark:text-emerald-300 dark:bg-emerald-900/30 dark:ring-emerald-800/50",
-    red: "text-red-700 bg-red-50 ring-red-200 dark:text-red-300 dark:bg-red-900/30 dark:ring-red-800/50",
-    blue: "text-sky-700 bg-sky-50 ring-sky-200 dark:text-sky-300 dark:bg-sky-900/30 dark:ring-sky-800/50",
+  const colorConfig = {
+    green: {
+      gradient: "from-emerald-500 via-green-500 to-teal-500",
+      icon: TrendingUp,
+      glow: "shadow-emerald-500/40",
+    },
+    red: {
+      gradient: "from-red-500 via-rose-500 to-pink-500",
+      icon: TrendingDown,
+      glow: "shadow-red-500/40",
+    },
+    blue: {
+      gradient: "from-blue-500 via-indigo-500 to-purple-500",
+      icon: Wallet,
+      glow: "shadow-blue-500/40",
+    },
   };
+
+  const config = colorConfig[color];
+  const Icon = config.icon;
+
   return (
     <motion.div
-      className={`rounded-2xl p-5 shadow-lg ring-1 ${colorMap[color]} flex flex-col items-center`}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      className={`rounded-3xl p-6 shadow-2xl ${config.glow} bg-gradient-to-br ${config.gradient} text-white flex flex-col items-center justify-center backdrop-blur-sm relative overflow-hidden group`}
+      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, type: "spring" }}
+      whileHover={{ scale: 1.05, y: -6, shadow: "0 30px 60px -15px rgba(0, 0, 0, 0.3)" }}
     >
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-2xl font-light font-serif">{value}</p>
+      {/* Animated background pattern */}
+      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+
+      <motion.div
+        className="relative z-10 flex flex-col items-center gap-3"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <motion.div
+          className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm"
+          whileHover={{ rotate: 360, scale: 1.1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Icon className="w-8 h-8" />
+        </motion.div>
+        <h3 className="text-sm font-semibold uppercase tracking-wider opacity-90">{title}</h3>
+        <motion.p
+          className="text-4xl font-extrabold font-mono"
+          initial={{ scale: 0.5 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+        >
+          {value}
+        </motion.p>
+      </motion.div>
     </motion.div>
   );
 };
@@ -771,35 +912,54 @@ const SummaryCard = ({ title, value, color }) => {
 // --------------------------------------
 const ExpenseList = ({ expenses, onDelete }) => (
   <motion.div
-    className="rounded-2xl p-5 shadow-lg ring-1 ring-black/10 bg-white dark:ring-white/10 dark:bg-gray-800"
+    className="rounded-2xl p-6 shadow-xl ring-1 ring-slate-200 dark:ring-slate-700 bg-white/90 backdrop-blur-sm dark:bg-gray-800/90 relative overflow-hidden"
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
   >
-    <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-slate-800 dark:text-white">
-      <DollarSign className="w-5 h-5 text-red-500" /> Expenses
+    {/* Gradient overlay */}
+    <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-pink-500/5 pointer-events-none" />
+
+    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white relative z-10">
+      <motion.div
+        whileHover={{ rotate: 360 }}
+        transition={{ duration: 0.5 }}
+        className="p-2 rounded-xl bg-gradient-to-br from-red-500 to-pink-500 text-white shadow-lg"
+      >
+        <DollarSign className="w-5 h-5" />
+      </motion.div>
+      Expenses
     </h2>
     {expenses.length === 0 ? (
-      <p className="text-slate-600 dark:text-gray-400">No expenses for this month.</p>
+      <p className="text-slate-600 dark:text-gray-400 text-center py-8 relative z-10">No expenses for this month.</p>
     ) : (
-      <ul className="divide-y divide-gray-200 dark:divide-gray-700 max-h-80 overflow-y-auto">
-        {expenses.map((e) => (
-          <li key={e.id} className="flex justify-between items-center py-2">
+      <ul className="divide-y divide-gray-200 dark:divide-gray-700 max-h-80 overflow-y-auto relative z-10">
+        {expenses.map((e, idx) => (
+          <motion.li
+            key={e.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.05 }}
+            whileHover={{ scale: 1.02, x: 4 }}
+            className="flex justify-between items-center py-3 px-2 rounded-lg hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 dark:hover:from-red-900/10 dark:hover:to-pink-900/10 transition-all"
+          >
             <div>
               <p className="font-semibold text-slate-800 dark:text-white">{e.name}</p>
               <p className="text-sm text-slate-500 dark:text-gray-400">{e.category || "Others"}</p>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-slate-800 dark:text-white">₹{e.amount.toFixed(2)}</span>
-              <button
+              <span className="text-slate-800 dark:text-white font-medium">₹{e.amount.toFixed(2)}</span>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => onDelete(e.id)}
                 className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                 aria-label={`Delete expense ${e.name}`}
                 title="Delete"
               >
                 <Trash2 className="w-5 h-5" />
-              </button>
+              </motion.button>
             </div>
-          </li>
+          </motion.li>
         ))}
       </ul>
     )}
@@ -811,34 +971,54 @@ const ExpenseList = ({ expenses, onDelete }) => (
 // --------------------------------------
 const IncomeList = ({ incomes, onDelete }) => (
   <motion.div
-    className="rounded-2xl p-5 shadow-lg ring-1 ring-black/10 bg-white dark:ring-white/10 dark:bg-gray-800"
+    className="rounded-2xl p-6 shadow-xl ring-1 ring-slate-200 dark:ring-slate-700 bg-white/90 backdrop-blur-sm dark:bg-gray-800/90 relative overflow-hidden"
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.1 }}
   >
-    <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-slate-800 dark:text-white">
-      <DollarSign className="w-5 h-5 text-emerald-500" /> Incomes
+    {/* Gradient overlay */}
+    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 pointer-events-none" />
+
+    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white relative z-10">
+      <motion.div
+        whileHover={{ rotate: 360 }}
+        transition={{ duration: 0.5 }}
+        className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 text-white shadow-lg"
+      >
+        <DollarSign className="w-5 h-5" />
+      </motion.div>
+      Incomes
     </h2>
     {incomes.length === 0 ? (
-      <p className="text-slate-600 dark:text-gray-400">No incomes for this month.</p>
+      <p className="text-slate-600 dark:text-gray-400 text-center py-8 relative z-10">No incomes for this month.</p>
     ) : (
-      <ul className="divide-y divide-gray-200 dark:divide-gray-700 max-h-80 overflow-y-auto">
-        {incomes.map((i) => (
-          <li key={i.id} className="flex justify-between items-center py-2">
+      <ul className="divide-y divide-gray-200 dark:divide-gray-700 max-h-80 overflow-y-auto relative z-10">
+        {incomes.map((i, idx) => (
+          <motion.li
+            key={i.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.05 }}
+            whileHover={{ scale: 1.02, x: 4 }}
+            className="flex justify-between items-center py-3 px-2 rounded-lg hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 dark:hover:from-emerald-900/10 dark:hover:to-green-900/10 transition-all"
+          >
             <div>
               <p className="font-semibold text-slate-800 dark:text-white">{i.source}</p>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-slate-800 dark:text-white">₹{i.amount.toFixed(2)}</span>
-              <button
+              <span className="text-slate-800 dark:text-white font-medium">₹{i.amount.toFixed(2)}</span>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => onDelete(i.id)}
                 className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                 aria-label={`Delete income ${i.source}`}
                 title="Delete"
               >
                 <Trash2 className="w-5 h-5" />
-              </button>
+              </motion.button>
             </div>
-          </li>
+          </motion.li>
         ))}
       </ul>
     )}
