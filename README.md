@@ -8,7 +8,7 @@ It helps users manage shared expenses with **AI categorization**, **fun payment 
 ---
 
 ## 🚀 Live Demo  
-Coming soon... *(local setup instructions below)*
+https://smartsplit-zgm8-2hve8nghu-ansh-10-ps-projects.vercel.app
 
 ---
 
